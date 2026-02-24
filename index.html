@@ -120,6 +120,10 @@ h1{text-align:center;font-size:22px;margin-bottom:4px;}
 <div id="graph-area" style="display:none;margin-top:6px;background:#f5f5f5;border:1px solid #ccc;border-radius:4px;padding:8px;">
 <canvas id="graph-canvas" width="460" height="200" style="width:100%;height:auto;"></canvas>
 </div>
+<div style="margin-top:6px;"><button class="btn-small btn-secondary" id="rival-toggle-btn" style="width:100%;display:none;">ライバル情報</button></div>
+<div id="rival-area" style="display:none;margin-top:6px;background:#f5f5f5;border:1px solid #ccc;border-radius:4px;padding:8px;font-size:11px;">
+<div id="rival-content"></div>
+</div>
 <div style="display:flex;gap:4px;margin-top:6px;">
 <button class="btn-small btn-secondary" id="bgm-toggle-btn" style="flex:1;">BGM ON</button>
 </div>
@@ -314,10 +318,23 @@ const sh=shuf([...RV_GEN_RANKS]);
 for(let i=0;i<29;i++){const rk=sh[i],rng=RV_RANGE[rk];rv['チーム'+(i+1)]={br:rk,kd:rng[0]+Math.floor(Math.random()*(rng[1]-rng[0]+1))};}
 return rv;
 }
+function weeklyRivalGrowth(){
+if(!G.rv)return;
+const growthBase={S:60,A:45,B:32,C:20,D:12,E:8,F:5};
+for(const k of Object.keys(G.rv)){
+const r=G.rv[k];
+const base=growthBase[r.br]||12;
+const rand=0.7+Math.random()*0.6;
+const growth=Math.round(base*rand*dim(r.kd));
+r.kd=Math.min(10000,r.kd+Math.max(0,growth));
+}}
+  
 function yearlyRivalChange(){
 if(!G.rv)return;
-for(const k of Object.keys(G.rv)){const r=G.rv[k];r.kd=Math.max(1000,Math.min(10000,Math.round(r.kd*(0.85+Math.random()*0.3))));}
-}
+for(const k of Object.keys(G.rv)){
+const r=G.rv[k];const rng=RV_RANGE[r.br];
+if(rng)r.kd=rng[0]+Math.floor(Math.random()*(rng[1]-rng[0]+1));
+}}
 const EB={
 '7-2':{n:'オアシス祭り演舞',ft:5,ex:false,cp:1},
 '7-3':{n:'スカイビール演舞',ft:5,ex:false,cp:1},
@@ -599,7 +616,7 @@ let pool=[];for(const e of ne){const w=e.w||10;for(let i=0;i<w;i++)pool.push(e);
 if(!mb){const mw=mbo?30:10;for(const e of me)for(let i=0;i<mw;i++)pool.push(e);}
 const ev=pool[Math.floor(Math.random()*pool.length)];ev.f();return ev.t;}
 
-function advWk(){G.wk++;if(G.wk>4){G.wk=1;G.mo++;}
+function advWk(){weeklyRivalGrowth();G.wk++;if(G.wk>4){G.wk=1;G.mo++;}
 if(G.mo===5&&G.wk===1&&!G.cd){G.ph='gw';execGWcamp();return;}
 if(G.mo===6&&G.wk===2&&!G.cd){G.ph='contest';prepC();}
 else if(G.mo===8&&G.wk===1&&G.cd&&!G.lcd){G.ph='leader_change';prepLC();}
@@ -864,8 +881,24 @@ if(!rh)rh=`<div class="result-row"><span class="result-label">今年度(${G.yr}�
 const con=document.getElementById('act-c');con.innerHTML='';
 for(const a of getActs()){const b=document.createElement('button');b.className=a.eb?'action-btn enbu-btn':'action-btn';b.disabled=a.off;b.innerHTML=`${a.l}<div class="action-desc">${a.d}</div>`;b.addEventListener('click',()=>exec(a.id));con.appendChild(b);}
 const bestBtn=document.getElementById('best-toggle-btn');
-if(bestBtn)bestBtn.style.display=G.bestKd?'block':'none';}
+if(bestBtn)bestBtn.style.display=G.bestKd?'block':'none';
+const rivalBtn=document.getElementById('rival-toggle-btn');
+if(rivalBtn)rivalBtn.style.display=G.rv?'block':'none';}
 function showMsg(t){const b=document.getElementById('message-box');if(t){b.innerHTML=t;b.classList.add('show');}else{b.classList.remove('show');}}
+
+function renderRivals(){
+if(!G.rv)return;
+const names=RV_BASE.map(r=>r.n);
+const sorted=names.filter(n=>G.rv[n]).sort((a,b)=>G.rv[b].kd-G.rv[a].kd);
+let h='';
+for(const n of sorted){
+const r=G.rv[n];
+h+=`<div style="display:flex;justify-content:space-between;padding:2px 0;border-bottom:1px solid #eee;">
+<span style="color:#444;">${n}</span>
+<span style="font-weight:bold;">${r.br} ${(r.kd/100).toFixed(2)}</span>
+</div>`;}
+document.getElementById('rival-content').innerHTML=h;
+}
 function renderBest(){
 const b=G.bestKd;if(!b)return;
 let h=`<div style="font-weight:bold;margin-bottom:4px;">🏆 最高感動力: ${b.kd}（${b.year}年目 ${b.mo}月${b.wk}週）</div>`;
@@ -900,6 +933,11 @@ document.getElementById('df-next').addEventListener('click',()=>startNYFromDF())
 document.getElementById('an-next').addEventListener('click',()=>{G.ph='training';saveGame();render();});
 function checkSave(){if(hasSave()){document.getElementById('continue-btn').style.display='block';document.getElementById('delete-btn').style.display='block';}else{document.getElementById('continue-btn').style.display='none';document.getElementById('delete-btn').style.display='none';}}
 checkSave();
+document.getElementById('rival-toggle-btn').addEventListener('click',function(){
+const area=document.getElementById('rival-area');
+if(area.style.display==='none'){renderRivals();area.style.display='block';}
+else{area.style.display='none';}
+});
 document.getElementById('bgm-toggle-btn').addEventListener('click',toggleBGM);
 document.getElementById('best-toggle-btn').addEventListener('click',function(){
 const area=document.getElementById('best-area');
@@ -957,6 +995,7 @@ case'canRep':canRep();break;
 </body>
 
 </html>
+
 
 
 
