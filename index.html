@@ -301,22 +301,21 @@ window.addEventListener('beforeunload',function(e){if(gameStarted){e.preventDefa
 const TH={i:25000,s:35000,f:46000,j:60000,t:80000};
 const RV_BASE=[
 {n:'BASSARI',br:'C'},{n:'北極星',br:'A'},{n:'奪家白猫',br:'A'},
-{n:'クエスチョン',br:'C'},{n:'どまんなか',br:'C'},{n:'氷',br:'C'},{n:'闇一点',br:'C'},
+{n:'クエスチョン',br:'C'},{n:'まんなか',br:'C'},{n:'氷',br:'C'},{n:'闇一点',br:'C'},
 {n:'みんなで踊ろうぜ',br:'D'},{n:'遊び人',br:'C'},{n:'炭酸国際大学',br:'D'},{n:'曖＆昧ホールディングス',br:'B'},
 {n:'赤フン隊',br:'A'},{n:'ノーススター学園',br:'A'},
 {n:'つっぱりファラオーズ',br:'B'},{n:'チアダンサーズ',br:'D'},{n:'テンブリュー・ジン',br:'S'},{n:'テン・ジン',br:'S'},
 {n:'D・K・D',br:'B'},{n:'輪っか',br:'S'},{n:'ラスク＆踊人',br:'C'},{n:'お見事',br:'D'},{n:'乳製品学園大学',br:'B'}
 ];
-const RV_GEN_RANKS=['S','S','S','S','A','A','A','A','B','B','B','B','B','B','B','B','B','B','B','B','B','C','C','C','C','C','C','D','D'];
-const RV_RANGE={S:[8000,9000],A:[7000,8000],B:[6000,7000],C:[5000,6000],D:[4000,5000],E:[3000,4000],F:[2000,3000]};
+const RV_GEN_RANKS=['S','A','A','B','B','B','B','B','B','B','B','C','C','C','C','C','D','D'];
 const RV=[];
-(function(){for(const r of RV_BASE)RV.push(r.n);for(let i=1;i<=29;i++)RV.push('チーム'+i);})();
+(function(){for(const r of RV_BASE)RV.push(r.n);for(let i=1;i<=18;i++)RV.push('チーム'+i);})();
 function shuf(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
 function initRivals(){
 const rv={};
 for(const r of RV_BASE){const rng=RV_RANGE[r.br];rv[r.n]={br:r.br,kd:rng[0]+Math.floor(Math.random()*(rng[1]-rng[0]+1))};}
 const sh=shuf([...RV_GEN_RANKS]);
-for(let i=0;i<29;i++){const rk=sh[i],rng=RV_RANGE[rk];rv['チーム'+(i+1)]={br:rk,kd:rng[0]+Math.floor(Math.random()*(rng[1]-rng[0]+1))};}
+for(let i=0;i<18;i++){const rk=sh[i],rng=RV_RANGE[rk];rv['チーム'+(i+1)]={br:rk,kd:rng[0]+Math.floor(Math.random()*(rng[1]-rng[0]+1))};}
 return rv;
 }
 function weeklyRivalGrowth(){
@@ -1011,6 +1010,7 @@ case'canRep':canRep();break;
 </body>
 
 </html>
+
 
 
 
