@@ -571,6 +571,7 @@ const inj=ci?chkInj():false;clamp();const bf3=snap();
 const evt=id==='enbu'?null:chkEvt();clamp();const bf4=snap();
 G.rd={wk:`${G.yr}年目 ${G.mo}月${G.wk}週`,title,boost,
 ad:ddif(bf1,bf2),inj,id:ddif(bf2,bf3),evt,ed:ddif(bf3,bf4),lvups:[...G.lvups]};
+updateBestKd();
 G.ph='result';render();}
 
 function chkInj(){const h=G.s.hirou;let c=h<=30?2:h<=60?10:h<=80?25:50;
@@ -734,7 +735,7 @@ else st.push({h:`<div class="contest-text">準大賞は</div><div class="contest
 return st;}
 
 function advC(){G.cs++;const c=G.cc;if(G.cs>=c.stages.length){G.cr.push({year:G.yr,result:c.rt,teams:c.teams,kd:c.kd,rl:c.rl});if(!G.hist)G.hist=[];G.hist.push({year:G.yr,kd:c.kd,members:G.s.members});
-if(!G.bestKd||c.kd>G.bestKd.kd){G.bestKd={kd:c.kd,year:G.yr,mo:G.mo,wk:G.wk,s:{odori:G.s.odori,kousei:G.s.kousei,koe:G.s.koe,tairyoku:G.s.tairyoku,teamwork:G.s.teamwork,members:G.s.members},ld:{daihyo:{n:G.ld.daihyo.n,lv:G.ld.daihyo.lv},furi:{n:G.ld.furi.n,lv:G.ld.furi.lv},sakuhin:{n:G.ld.sakuhin.n,lv:G.ld.sakuhin.lv},kikaku:{n:G.ld.kikaku.n,lv:G.ld.kikaku.lv}}};}
+updateBestKd();
 G.cd=true;G.lcd=false;G.cp=0;G.mo=6;G.wk=3;if(G.yr%10===0){G.ph='anniversary';execAnniversary();}else{G.ph='training';}saveGame();}render();}
 
 function prepLC(){const cr=G.cr.find(r=>r.year===G.yr);let baseBp=30;if(cr){const pm={0:30,1:50,2:60,3:70,4:80,5:90};baseBp=pm[cr.rl]||30;}
@@ -791,6 +792,14 @@ G.ph='df';render();}
 
 function startNYFromDF(){G.ph='training';showMsg('');saveGame();render();}
 
+function updateBestKd(){
+const kd=calcK();
+if(!G.bestKd||kd>G.bestKd.kd){
+G.bestKd={kd:kd,year:G.yr,mo:G.mo,wk:G.wk,
+s:{odori:G.s.odori,kousei:G.s.kousei,koe:G.s.koe,tairyoku:G.s.tairyoku,teamwork:G.s.teamwork,members:G.s.members},
+ld:{daihyo:{n:G.ld.daihyo.n,lv:G.ld.daihyo.lv},furi:{n:G.ld.furi.n,lv:G.ld.furi.lv},sakuhin:{n:G.ld.sakuhin.n,lv:G.ld.sakuhin.lv},kikaku:{n:G.ld.kikaku.n,lv:G.ld.kikaku.lv}}};
+}}
+  
 function showScr(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
 function render(){switch(G.ph){
 case'training':showScr('home-screen');updHome();break;
@@ -848,7 +857,9 @@ for(const r of sorted){const ic=r.year===G.yr;rh+=`<div class="result-row"><span
 if(!G.cr.some(r=>r.year===G.yr))rh=`<div class="result-row"><span class="result-label">今年度(${G.yr}年目)</span><span class="result-value">-</span></div>`+rh;
 if(!rh)rh=`<div class="result-row"><span class="result-label">今年度(${G.yr}年目)</span><span class="result-value">-</span></div>`;rc.innerHTML=rh;
 const con=document.getElementById('act-c');con.innerHTML='';
-for(const a of getActs()){const b=document.createElement('button');b.className=a.eb?'action-btn enbu-btn':'action-btn';b.disabled=a.off;b.innerHTML=`${a.l}<div class="action-desc">${a.d}</div>`;b.addEventListener('click',()=>exec(a.id));con.appendChild(b);}}
+for(const a of getActs()){const b=document.createElement('button');b.className=a.eb?'action-btn enbu-btn':'action-btn';b.disabled=a.off;b.innerHTML=`${a.l}<div class="action-desc">${a.d}</div>`;b.addEventListener('click',()=>exec(a.id));con.appendChild(b);}
+const bestBtn=document.getElementById('best-toggle-btn');
+if(bestBtn)bestBtn.style.display=G.bestKd?'block':'none';}
 function showMsg(t){const b=document.getElementById('message-box');if(t){b.innerHTML=t;b.classList.add('show');}else{b.classList.remove('show');}}
 function renderBest(){
 const b=G.bestKd;if(!b)return;
@@ -868,8 +879,6 @@ h+=`<div style="display:flex;justify-content:space-between;"><span style="color:
 h+=`<div style="display:flex;justify-content:space-between;"><span style="color:#666;">企画 ${b.ld.kikaku.n}</span><span style="font-weight:bold;">Lv${b.ld.kikaku.lv}</span></div>`;
 h+=`</div>`;
 document.getElementById('best-content').innerHTML=h;
-const btn=document.getElementById('best-toggle-btn');
-if(btn)btn.style.display='block';
 }
 
 document.getElementById('start-btn').addEventListener('click',()=>{const tn=document.getElementById('team-name').value.trim();const ns={daihyo:document.getElementById('leader-daihyo').value.trim(),furi:document.getElementById('leader-furi').value.trim(),sakuhin:document.getElementById('leader-sakuhin').value.trim(),kikaku:document.getElementById('leader-kikaku').value.trim()};if(!tn||!ns.daihyo||!ns.furi||!ns.sakuhin||!ns.kikaku){alert('すべての名前を入力してください');return;}G.tn=tn;for(const k of Object.keys(ns))G.ld[k].n=ns[k];G.lcd=false;G.rv=initRivals();gameStarted=true;showMsg('');saveGame();render();});
@@ -941,4 +950,5 @@ case'canRep':canRep();break;
 }});
 </script>
 </body>
+
 </html>
