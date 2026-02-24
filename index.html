@@ -536,7 +536,7 @@ function getEB(){if(!G.cd)return null;return EB[G.mo+'-'+G.wk]||null;}
 function clamp(){const s=G.s;s.odori=Math.min(10000,Math.max(0,s.odori));s.kousei=Math.min(10000,Math.max(0,s.kousei));s.koe=Math.min(10000,Math.max(0,s.koe));s.tairyoku=Math.min(10000,Math.max(0,s.tairyoku));s.teamwork=Math.min(10000,Math.max(0,s.teamwork));s.yaruki=Math.max(0,Math.min(100,s.yaruki));s.hirou=Math.max(0,Math.min(100,s.hirou));s.members=Math.max(1,Math.min(150,s.members));}
 function snap(){return{...G.s};}
 function ddif(b,a){const nm={odori:'踊り',kousei:'構成',koe:'声',tairyoku:'体力',teamwork:'チームワーク',yaruki:'やる気',hirou:'疲労',members:'メンバー'};const ln=[];for(const k of['odori','kousei','koe','tairyoku','teamwork','yaruki','hirou','members']){const d=a[k]-b[k];if(d!==0){let v;if(k==='yaruki'||k==='hirou')v=(d>0?'+':'')+d+'%';else if(k==='members')v=(d>0?'+':'')+d+'人';else v=(d>0?'+':'')+(d/100).toFixed(2);ln.push({l:nm[k],v});}}return ln;}
-function rollEB(ex){const pool=['odori','kousei','koe','tairyoku','teamwork'];const sh=shuf(pool);const cnt=2+(Math.random()<.5?1:0);const picked=sh.slice(0,cnt);const fx={};for(const s of picked){let b=250+Math.floor(Math.random()*101);if(ex)b=Math.round(b*1.5);fx[s]=b;}return fx;}function applyEB(fx){for(const[k,v]of Object.entries(fx)){if(k==='teamwork')addTW(v);else addS(k,v);}}
+function rollEB(ex){const pool=['odori','kousei','koe','tairyoku','teamwork'];const sh=shuf(pool);const cnt=2+(Math.random()<.5?1:0);const picked=sh.slice(0,cnt);const fx={};for(const s of picked){let b=250+Math.floor(Math.random()*101);if(ex)b=Math.round(b*1.5);fx[s]=b;}return fx;}function applyEB(fx){for(const[k,v]of Object.entries(fx)){if(k==='teamwork')addTW(Math.round(v*0.6));else addS(k,v);}}
 if(e)a.push({id:'enbu',l:e.n,d:e.ex?'遠征 疲労多め 効果大':e.onsen?'演舞+温泉 疲労回復':'演舞イベント',off:false,eb:true});
 a.push(
 {id:'furi',l:'振り練',d:'踊り+++体力++声+',off:false},
@@ -559,9 +559,9 @@ case'kousei':{const m=lm('sakuhin')*y;addS('kousei',Math.round(130*m));addS('odo
 case'koe':{const m=lm('sakuhin')*y;addS('koe',Math.round(220*m));addTW(Math.round(100*y));s.hirou=Math.min(100,s.hirou+5+Math.floor(Math.random()*4));isTr=true;ci=false;addEx('sakuhin');title='声出しを行った';break;}
 case'tai':{const m=lm('furi')*y;addS('tairyoku',Math.round(220*m));s.hirou=Math.min(100,s.hirou+5+Math.floor(Math.random()*4));isTr=true;addEx('furi');title='体力トレを行った';break;}
 case'taiken':{addS('odori',Math.round(100*y));addTW(Math.round(100*y));s.hirou=Math.min(100,s.hirou+5);isTr=true;addEx('kikaku');const rc=Math.min(60,s.teamwork/150);if(Math.random()*100<rc){const a=Math.min(3,Math.floor(Math.random()*3)+1);const before=s.members;s.members=Math.min(150,s.members+a);const actual=s.members-before;s.yaruki=Math.min(100,s.yaruki+10);title=`体験練 ${actual}人加入!`;}else title='体験練 加入者なし';break;}
-case'kikaku':{G.kp++;s.hirou=Math.max(0,s.hirou-10);ci=false;addEx('daihyo');addEx('kikaku');if(G.kp>=3){G.kp=0;const ts=['g','b','u'],p=ts[Math.floor(Math.random()*3)];const dm=lm('daihyo'),km=lm('kikaku');s.yaruki=Math.min(100,s.yaruki+Math.round(25*dm));addTW(Math.round(800*km));
+case'kikaku':{G.kp++;s.hirou=Math.max(0,s.hirou-10);ci=false;addEx('daihyo');addEx('kikaku');if(G.kp>=3){G.kp=0;const ts=['g','b','u'],p=ts[Math.floor(Math.random()*3)];const dm=lm('daihyo'),km=lm('kikaku');s.yaruki=Math.min(100,s.yaruki+Math.round(25*dm));addTW(Math.round(480*km));
 if(p==='g'){addS('odori',Math.round(680*lm('furi')));addS('kousei',Math.round(680*lm('sakuhin')));addS('koe',Math.round(600*lm('sakuhin')));addS('tairyoku',Math.round(280*lm('furi')));title='合宿を実施!';}
-else if(p==='b'){s.hirou=0;addS('tairyoku',Math.round(500*lm('furi')));addS('odori',Math.round(200*lm('furi')));addTW(Math.round(300*lm('kikaku')));title='BBQを実施!';}
+else if(p==='b'){s.hirou=0;addS('tairyoku',Math.round(500*lm('furi')));addS('odori',Math.round(200*lm('furi')));addTW(Math.round(180*lm('kikaku')));title='BBQを実施!';}
 else{addS('tairyoku',Math.round(900*lm('furi')));addS('koe',Math.round(500*lm('sakuhin')));addS('odori',Math.round(300*lm('furi')));s.hirou=Math.min(100,s.hirou+12);title='運動会を実施!';}
 case'yasumi':{const rr=Math.random();let hr=20,ht='休みを取った';if(rr<0.1){hr=10;ht='あまり寝付けなかった...';}else if(rr>0.9){hr=40;ht='ぐっすり眠れた!';}s.hirou=Math.max(0,s.hirou-hr);s.yaruki=Math.min(100,s.yaruki+10+Math.floor(Math.random()*6));s.teamwork=Math.max(0,s.teamwork-50);ci=false;addEx('daihyo');title=ht;break;}
 case'enbu':{const e=getEB();if(e){const fx=rollEB(e.ex);applyEB(fx);s.hirou=Math.min(100,s.hirou+e.ft);if(e.onsen)s.hirou=Math.max(0,s.hirou-e.ft*2);G.cp+=e.cp;const ykLoss=1+Math.floor(Math.random()*5);s.yaruki=Math.max(0,s.yaruki-ykLoss);let mj=false;if(Math.random()<.25){const a=Math.min(3,Math.floor(Math.random()*3)+1);s.members=Math.min(150,s.members+a);s.yaruki=Math.min(100,s.yaruki+10);mj=true;}title=mj?`${e.n} メンバー加入!`:`${e.n}に参加`;}break;}
@@ -583,7 +583,7 @@ if(Math.random()>.3)return null;
 const bc=!G.cd,mb=meb(),mbo=mebo();
 const me=[
 {t:'メンバーが友達を連れてきた',f:()=>{const a=Math.min(3,Math.floor(Math.random()*2)+1);G.s.members=Math.min(150,G.s.members+a);G.s.yaruki=Math.min(100,G.s.yaruki+10);}},
-{t:'SNSでチームが話題に',f:()=>{addTW(100);G.s.members=Math.min(150,G.s.members+1);G.s.yaruki=Math.min(100,G.s.yaruki+10);}},
+{t:'SNSでチームが話題に',f:()=>{addTW(60);G.s.members=Math.min(150,G.s.members+1);G.s.yaruki=Math.min(100,G.s.yaruki+10);}},
 ];
 const ne=[
 {t:'他チームの演舞を見て刺激を受けた',f:()=>{G.s.yaruki=Math.min(100,G.s.yaruki+20);}},
@@ -594,7 +594,7 @@ const ne=[
 if(!bc){
 ne.push({t:'メンバーが辞めたいと言い出した',f:()=>{const l=Math.min(3,Math.floor(Math.random()*2)+1);G.s.members=Math.max(1,G.s.members-l);G.s.yaruki=Math.max(0,G.s.yaruki-10);}});
 const rv2=RV[Math.floor(Math.random()*RV.length)];
-ne.push({t:rv2+'との合同練習を行った',f:()=>{const pool=['odori','kousei','koe','tairyoku'];addS(pool[Math.floor(Math.random()*4)],300);addTW(200);}});}
+ne.push({t:rv2+'との合同練習を行った',f:()=>{const pool=['odori','kousei','koe','tairyoku'];addS(pool[Math.floor(Math.random()*4)],300);addTW(120);}});
 let pool=[];for(const e of ne){const w=e.w||10;for(let i=0;i<w;i++)pool.push(e);}
 if(!mb){const mw=mbo?30:10;for(const e of me)for(let i=0;i<mw;i++)pool.push(e);}
 const ev=pool[Math.floor(Math.random()*pool.length)];ev.f();return ev.t;}
@@ -611,7 +611,7 @@ addS('odori',Math.round(600*fm*y));
 addS('kousei',Math.round(600*sm*y));
 addS('koe',Math.round(400*sm*y));
 addS('tairyoku',Math.round(400*fm*y));
-addTW(Math.round(600*km*y));
+addTW(Math.round(360*km*y));
 s.yaruki=Math.min(100,s.yaruki+Math.round(15*dm));
 s.hirou=Math.min(100,s.hirou+12);
 addEx('furi');addEx('sakuhin');addEx('kikaku');addEx('daihyo');
@@ -953,6 +953,7 @@ case'canRep':canRep();break;
 </body>
 
 </html>
+
 
 
 
