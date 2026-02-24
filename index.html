@@ -299,6 +299,7 @@ let gameStarted=false;
 window.addEventListener('beforeunload',function(e){if(gameStarted){e.preventDefault();e.returnValue='';}});
 
 const TH={i:25000,s:35000,f:46000,j:60000,t:80000};
+const RV_RANGE={S:[8000,9000],A:[7000,8000],B:[6000,7000],C:[5000,6000],D:[4000,5000],E:[3000,4000],F:[2000,3000]};
 const RV_BASE=[
 {n:'BASSARI',br:'C'},{n:'北極星',br:'A'},{n:'奪家白猫',br:'A'},
 {n:'クエスチョン',br:'C'},{n:'まんなか',br:'C'},{n:'氷',br:'C'},{n:'闇一点',br:'C'},
@@ -1010,6 +1011,7 @@ case'canRep':canRep();break;
 </body>
 
 </html>
+
 
 
 
