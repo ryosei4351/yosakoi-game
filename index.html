@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>よさこいチームをつくろう！</title>
+<link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DotGothic16',monospace;background:#fff;color:#222;min-height:100vh;display:flex;justify-content:center;align-items:flex-start;padding:8px;}
+.screen{display:none;width:100%;max-width:480px;}
+.screen.active{display:block;}
+h1{text-align:center;font-size:22px;margin-bottom:4px;}
+.subtitle{text-align:center;color:#888;font-size:12px;margin-bottom:20px;}
+.input-group{margin-bottom:10px;}
+.input-group label{display:block;font-size:11px;color:#555;margin-bottom:3px;}
+.input-group input{width:100%;padding:7px 8px;font-size:14px;font-family:'DotGothic16',monospace;border:1px solid #aaa;border-radius:4px;background:#fafafa;color:#222;outline:none;}
+.section-title{font-size:12px;color:#555;margin:14px 0 6px 0;padding-bottom:3px;border-bottom:1px solid #ccc;}
+.btn{display:block;width:100%;padding:10px;font-size:14px;font-family:'DotGothic16',monospace;font-weight:bold;color:#222;background:#ddd;border:1px solid #999;border-radius:4px;cursor:pointer;margin-top:14px;}
+.btn:hover{background:#ccc;}
+.btn:disabled{background:#eee;color:#aaa;cursor:not-allowed;}
+.btn-small{display:inline-block;padding:6px 14px;font-size:12px;font-family:'DotGothic16',monospace;color:#222;background:#ddd;border:1px solid #999;border-radius:4px;cursor:pointer;margin:3px;}
+.btn-small:hover{background:#ccc;}
+.btn-secondary{background:#eee;border-color:#aaa;}
+.header-row{text-align:center;margin-bottom:6px;font-size:14px;font-weight:bold;}
+.header-sub{text-align:center;font-size:11px;color:#888;margin-bottom:8px;}
+.notice-box{background:#f5f5f5;border:1px solid #ccc;border-radius:4px;padding:5px 8px;margin-bottom:6px;font-size:11px;color:#555;}
+.message-box{background:#f5f5f5;border-left:3px solid #999;border-radius:3px;padding:6px 8px;margin-bottom:6px;font-size:11px;line-height:1.5;display:none;max-height:60px;overflow-y:auto;}
+.message-box.show{display:block;}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px 12px;background:#f5f5f5;border:1px solid #ccc;border-radius:4px;padding:6px 8px;margin-bottom:6px;font-size:11px;}
+.sg-row{display:flex;justify-content:space-between;padding:1px 0;}
+.sg-label{color:#666;}.sg-value{font-weight:bold;}
+.sg-full{grid-column:1/-1;display:flex;justify-content:space-between;padding:2px 0;border-top:1px solid #ddd;margin-top:2px;padding-top:4px;}
+.leader-row{display:grid;grid-template-columns:1fr 1fr;gap:2px 12px;background:#f5f5f5;border:1px solid #ccc;border-radius:4px;padding:4px 8px;margin-bottom:6px;font-size:10px;}
+.lr-item{display:flex;justify-content:space-between;}.lr-label{color:#666;}.lr-value{font-weight:bold;}
+.result-box{background:#f5f5f5;border:1px solid #ccc;border-radius:4px;padding:4px 8px;margin-bottom:6px;font-size:10px;max-height:90px;overflow-y:auto;}
+.result-box-title{font-size:10px;color:#888;margin-bottom:2px;position:sticky;top:0;background:#f5f5f5;padding:2px 0;z-index:1;}
+.result-row{display:flex;justify-content:space-between;padding:1px 0;}.result-label{color:#666;}.result-value{font-weight:bold;}
+.actions-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:4px;}
+.action-btn{padding:8px 6px;font-size:11px;font-family:'DotGothic16',monospace;color:#222;background:#eee;border:1px solid #aaa;border-radius:4px;cursor:pointer;text-align:center;}
+.action-btn:hover{background:#ddd;}
+.action-btn:disabled{background:#f5f5f5;color:#bbb;border-color:#ccc;cursor:not-allowed;}
+.action-btn.enbu-btn{border:1px solid #c87030;background:#ffe0b2;color:#7c3f00;}
+.action-btn.enbu-btn:hover{background:#ffd08a;}
+.action-desc{font-size:9px;color:#999;margin-top:2px;}
+.contest-box{background:#f5f5f5;border:1px solid #ccc;border-radius:4px;padding:16px;margin:10px auto;max-width:480px;text-align:center;}
+.contest-box h2{font-size:16px;margin-bottom:12px;}
+.contest-text{font-size:12px;line-height:1.8;margin-bottom:8px;}
+.contest-highlight{font-size:18px;font-weight:bold;margin:12px 0;}
+.contest-result-big{font-size:16px;font-weight:bold;margin:14px 0;}
+.contest-teams{font-size:10px;text-align:left;line-height:1.6;margin:8px 0;padding:8px;background:#fff;border:1px solid #ddd;border-radius:4px;}
+.leader-change-box{background:#f5f5f5;border:1px solid #ccc;border-radius:4px;padding:16px;margin:10px auto;max-width:480px;}
+.leader-change-box h2{font-size:14px;text-align:center;margin-bottom:12px;}
+.dialogue-text{font-size:12px;line-height:1.6;margin-bottom:12px;padding:8px;background:#fff;border:1px solid #ddd;border-radius:4px;}
+.choice-btn{display:block;width:100%;padding:8px;font-size:12px;font-family:'DotGothic16',monospace;color:#222;background:#eee;border:1px solid #aaa;border-radius:4px;cursor:pointer;text-align:left;margin-bottom:6px;}
+.choice-btn:hover{background:#ddd;}
+.prob-display{text-align:center;font-size:11px;color:#888;margin:6px 0;}
+.yearend-box{background:#f5f5f5;border:1px solid #ccc;border-radius:4px;padding:16px;margin:10px auto;max-width:480px;text-align:center;}
+.yearend-box h2{font-size:14px;margin-bottom:12px;}
+.yearend-text{font-size:12px;line-height:1.8;margin-bottom:8px;}
+.rd-box{background:#f5f5f5;border:1px solid #ccc;border-radius:4px;padding:16px;margin:10px auto;max-width:480px;}
+.rd-week{text-align:center;font-size:11px;color:#888;margin-bottom:10px;}
+.rd-section{margin-bottom:10px;padding-bottom:8px;border-bottom:1px dashed #ccc;}
+.rd-section:last-of-type{border-bottom:none;}
+.rd-title{font-size:13px;font-weight:bold;margin-bottom:6px;}
+.rd-note{font-size:11px;color:#666;margin-bottom:4px;}
+.rd-line{font-size:12px;display:flex;justify-content:space-between;padding:2px 0;}
+.rd-lbl{color:#666;}.rd-val{font-weight:bold;}
+.df-box{background:#f5f5f5;border:1px solid #ccc;border-radius:4px;padding:16px;margin:10px auto;max-width:480px;text-align:center;}
+.df-box h2{font-size:14px;margin-bottom:12px;}
+.df-box .rd-line{max-width:280px;margin:0 auto;}
+.df-text{font-size:12px;line-height:1.8;margin-bottom:8px;}
+</style>
+</head>
+<body>
+
+<div id="title-screen" class="screen active">
+<div style="max-width:480px;margin:0 auto;">
+<h1>よさこいチームをつくろう！</h1>
+<p class="subtitle">チームを育てて、大会を目指せ</p>
+<div class="input-group"><label>チーム名</label><input type="text" id="team-name" placeholder="例：海物語"></div>
+<div class="section-title">班長の名前</div>
+<div class="input-group"><label>代表班長（やる気に影響）</label><input type="text" id="leader-daihyo" placeholder="名前を入力"></div>
+<div class="input-group"><label>振り班長（踊り・体力に影響）</label><input type="text" id="leader-furi" placeholder="名前を入力"></div>
+<div class="input-group"><label>作品班長（構成・声に影響）</label><input type="text" id="leader-sakuhin" placeholder="名前を入力"></div>
+<div class="input-group"><label>企画班長（チームワークに影響）</label><input type="text" id="leader-kikaku" placeholder="名前を入力"></div>
+<button class="btn" id="start-btn">ゲーム開始</button>
+<button class="btn btn-secondary" id="continue-btn" style="display:none;margin-top:6px;">続きから再開</button>
+<button class="btn btn-secondary" id="delete-btn" style="display:none;margin-top:4px;font-size:11px;color:#999;">セーブデータを削除</button>
+</div></div>
+
+<div id="home-screen" class="screen">
+<div class="header-row" id="d-tn"></div>
+<div class="header-sub" id="d-wk"></div>
+<div id="notice-area"></div>
+<div id="message-box" class="message-box"></div>
+<div class="stats-grid">
+<div class="sg-row"><span class="sg-label">踊り</span><span class="sg-value" id="s-od"></span></div>
+<div class="sg-row"><span class="sg-label">構成</span><span class="sg-value" id="s-ko"></span></div>
+<div class="sg-row"><span class="sg-label">声</span><span class="sg-value" id="s-koe"></span></div>
+<div class="sg-row"><span class="sg-label">体力</span><span class="sg-value" id="s-ta"></span></div>
+<div class="sg-row"><span class="sg-label">チームワーク</span><span class="sg-value" id="s-tw"></span></div>
+<div class="sg-row"><span class="sg-label">メンバー</span><span class="sg-value" id="s-mem"></span></div>
+<div class="sg-row"><span class="sg-label">やる気</span><span class="sg-value" id="s-yk"></span></div>
+<div class="sg-row"><span class="sg-label">疲労</span><span class="sg-value" id="s-hr"></span></div>
+<div class="sg-full"><span class="sg-label">感動力</span><span class="sg-value" id="s-kd">-</span></div>
+</div>
+<div class="leader-row">
+<div class="lr-item"><span class="lr-label">代表 <span id="ln-d"></span></span><span class="lr-value">Lv<span id="ll-d">1</span></span></div>
+<div class="lr-item"><span class="lr-label">振り <span id="ln-f"></span></span><span class="lr-value">Lv<span id="ll-f">1</span></span></div>
+<div class="lr-item"><span class="lr-label">作品 <span id="ln-s"></span></span><span class="lr-value">Lv<span id="ll-s">1</span></span></div>
+<div class="lr-item"><span class="lr-label">企画 <span id="ln-k"></span></span><span class="lr-value">Lv<span id="ll-k">1</span></span></div>
+</div>
+<div class="result-box"><div class="result-box-title">大会結果</div><div id="cr-list"></div></div>
+<div style="margin-top:6px;"><button class="btn-small btn-secondary" id="best-toggle-btn" style="width:100%;display:none;">最高記録を見る</button></div>
+<div id="best-area" style="display:none;margin-top:6px;background:#f5f5f5;border:1px solid #ccc;border-radius:4px;padding:8px;font-size:11px;">
+<div id="best-content"></div>
+</div>
+<div style="margin-top:6px;"><button class="btn-small btn-secondary" id="graph-toggle-btn" style="width:100%;">グラフ表示</button></div>
+<div id="graph-area" style="display:none;margin-top:6px;background:#f5f5f5;border:1px solid #ccc;border-radius:4px;padding:8px;">
+<canvas id="graph-canvas" width="460" height="200" style="width:100%;height:auto;"></canvas>
+</div>
+<div style="display:flex;gap:4px;margin-top:6px;">
+<button class="btn-small btn-secondary" id="bgm-toggle-btn" style="flex:1;">BGM ON</button>
+</div>
+<div style="display:flex;gap:4px;margin-top:6px;">
+<button class="btn-small btn-secondary" id="save-confirm-btn" style="flex:1;">セーブ</button>
+<button class="btn-small btn-secondary" id="reset-confirm-btn" style="flex:1;color:#999;">データ削除</button>
+</div>
+<div class="section-title">行動</div>
+<div class="actions-grid" id="act-c"></div>
+</div>
+
+<div id="result-screen" class="screen">
+<div class="rd-box"><div class="rd-week" id="rd-wk"></div><div id="rd-content"></div><button class="btn" id="rd-next">次へ</button></div>
+</div>
+
+<div id="contest-screen" class="screen">
+<div class="contest-box"><h2 id="ct-title"></h2><div id="ct-content"></div><button class="btn" id="ct-next">次へ</button></div>
+</div>
+
+<div id="lc-screen" class="screen">
+<div class="leader-change-box"><h2 id="lc-title">班長との話し合い</h2><div id="lc-content"></div></div>
+</div>
+
+<div id="ye-screen" class="screen">
+<div class="yearend-box"><h2 id="ye-title"></h2><div id="ye-content"></div><button class="btn" id="ye-next">次の年へ</button></div>
+</div>
+
+<div id="gw-screen" class="screen">
+<div class="df-box"><h2>GW強化合宿</h2><div id="gw-content"></div><button class="btn" id="gw-next">次へ</button></div>
+</div>
+
+<div id="decay-screen" class="screen">
+<div class="df-box"><h2>新年度</h2><div id="decay-content"></div><button class="btn" id="decay-next">次へ</button></div>
+</div>
+
+<div id="anniversary-screen" class="screen">
+<div class="contest-box"><h2 id="an-title"></h2><div id="an-content"></div><button class="btn" id="an-next">大会後の活動へ</button></div>
+</div>
+
+<div id="df-screen" class="screen">
+<div class="df-box"><h2>ド派手フェスティバル</h2><div id="df-content"></div><button class="btn" id="df-next">新年度スタート</button></div>
+</div>
+
+<script>
+let audioCtx=null;
+function initAudio(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();}
+function playBeep(){
+try{
+initAudio();if(audioCtx.state==='suspended')audioCtx.resume();
+const o=audioCtx.createOscillator();const g=audioCtx.createGain();
+o.type='square';o.frequency.value=1400;
+g.gain.setValueAtTime(0.08,audioCtx.currentTime);
+g.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+0.06);
+o.connect(g);g.connect(audioCtx.destination);
+o.start(audioCtx.currentTime);o.stop(audioCtx.currentTime+0.06);
+}catch(e){}
+}
+document.addEventListener('click',function(e){
+const t=e.target;
+if(t.closest('.btn')||t.closest('.btn-small')||t.closest('.action-btn')||t.closest('.choice-btn')||t.closest('[data-lc]'))playBeep();
+});
+
+let bgmPlaying=false,bgmTimer=null,bgmGain=null;
+const BGM_MELODY=[
+// Phrase 1
+{n:72,d:0.4},{n:0,d:0.1},{n:74,d:0.4},{n:0,d:0.1},
+{n:76,d:0.8},{n:0,d:0.2},
+{n:72,d:0.4},{n:0,d:0.1},{n:74,d:0.4},{n:0,d:0.1},
+{n:79,d:0.8},{n:0,d:0.2},
+{n:76,d:0.4},{n:0,d:0.1},{n:74,d:0.4},{n:0,d:0.1},
+{n:72,d:0.4},{n:0,d:0.1},{n:69,d:0.4},{n:0,d:0.1},
+{n:67,d:1.2},{n:0,d:0.4},
+// Phrase 2
+{n:74,d:0.4},{n:0,d:0.1},{n:76,d:0.4},{n:0,d:0.1},
+{n:79,d:0.8},{n:0,d:0.2},
+{n:81,d:0.4},{n:0,d:0.1},{n:79,d:0.4},{n:0,d:0.1},
+{n:76,d:0.8},{n:0,d:0.2},
+{n:74,d:0.4},{n:0,d:0.1},{n:72,d:0.4},{n:0,d:0.1},
+{n:74,d:0.4},{n:0,d:0.1},{n:76,d:0.4},{n:0,d:0.1},
+{n:72,d:1.2},{n:0,d:0.4},
+// Phrase 3
+{n:79,d:0.4},{n:0,d:0.1},{n:81,d:0.4},{n:0,d:0.1},
+{n:79,d:0.8},{n:0,d:0.2},
+{n:76,d:0.4},{n:0,d:0.1},{n:74,d:0.4},{n:0,d:0.1},
+{n:76,d:0.8},{n:0,d:0.2},
+{n:74,d:0.4},{n:0,d:0.1},{n:72,d:0.4},{n:0,d:0.1},
+{n:74,d:0.4},{n:0,d:0.1},{n:72,d:0.4},{n:0,d:0.1},
+{n:74,d:1.2},{n:0,d:0.4},
+// Phrase 4
+{n:76,d:0.4},{n:0,d:0.1},{n:74,d:0.4},{n:0,d:0.1},
+{n:72,d:0.4},{n:0,d:0.1},{n:74,d:0.4},{n:0,d:0.1},
+{n:76,d:0.8},{n:0,d:0.2},
+{n:79,d:0.4},{n:0,d:0.1},{n:76,d:0.4},{n:0,d:0.1},
+{n:74,d:0.4},{n:0,d:0.1},{n:72,d:0.4},{n:0,d:0.1},
+{n:67,d:0.4},{n:0,d:0.1},{n:69,d:0.4},{n:0,d:0.1},
+{n:72,d:1.2},{n:0,d:0.6},
+];
+const BGM_BASS=[
+// Phrase 1 (C-G-Am-G)
+{n:48,d:1.4},{n:0,d:0.2},
+{n:55,d:1.4},{n:0,d:0.2},
+{n:45,d:1.4},{n:0,d:0.2},
+{n:55,d:1.4},{n:0,d:0.2},
+// Phrase 2 (C-G-F-G)
+{n:48,d:1.4},{n:0,d:0.2},
+{n:55,d:1.4},{n:0,d:0.2},
+{n:53,d:1.4},{n:0,d:0.2},
+{n:55,d:1.4},{n:0,d:0.2},
+// Phrase 3 (F-G-Am-G)
+{n:53,d:1.4},{n:0,d:0.2},
+{n:55,d:1.4},{n:0,d:0.2},
+{n:45,d:1.4},{n:0,d:0.2},
+{n:55,d:1.4},{n:0,d:0.2},
+// Phrase 4 (F-G-C)
+{n:53,d:1.4},{n:0,d:0.2},
+{n:55,d:1.4},{n:0,d:0.2},
+{n:48,d:1.4},{n:0,d:0.2},
+{n:48,d:1.8},{n:0,d:0.6},
+];
+function midiToFreq(m){return 440*Math.pow(2,(m-69)/12);}
+function scheduleTrack(notes,type,vol,startTime){
+initAudio();
+let t=startTime;
+for(const note of notes){
+if(note.n>0){
+const o=audioCtx.createOscillator();const g=audioCtx.createGain();
+o.type=type;o.frequency.value=midiToFreq(note.n);
+g.gain.setValueAtTime(vol,t);
+g.gain.setValueAtTime(vol,t+note.d*0.7);
+g.gain.exponentialRampToValueAtTime(0.001,t+note.d*0.95);
+o.connect(g);g.connect(bgmGain);
+o.start(t);o.stop(t+note.d);
+}
+t+=note.d;
+}
+return t;
+}
+function getBgmDuration(notes){let d=0;for(const n of notes)d+=n.d;return d;}
+function startBGM(){
+if(bgmPlaying)return;
+initAudio();if(audioCtx.state==='suspended')audioCtx.resume();
+bgmGain=audioCtx.createGain();bgmGain.gain.value=0.5;bgmGain.connect(audioCtx.destination);
+bgmPlaying=true;
+function loop(){
+if(!bgmPlaying)return;
+const now=audioCtx.currentTime+0.05;
+scheduleTrack(BGM_MELODY,'triangle',0.04,now);
+scheduleTrack(BGM_BASS,'sine',0.035,now);
+const dur=Math.max(getBgmDuration(BGM_MELODY),getBgmDuration(BGM_BASS));
+bgmTimer=setTimeout(loop,(dur-0.1)*1000);
+}
+loop();
+}
+function stopBGM(){
+bgmPlaying=false;
+if(bgmTimer){clearTimeout(bgmTimer);bgmTimer=null;}
+if(bgmGain){bgmGain.gain.setValueAtTime(0,audioCtx.currentTime);bgmGain=null;}
+}
+function toggleBGM(){
+if(bgmPlaying)stopBGM();else startBGM();
+const btn=document.getElementById('bgm-toggle-btn');
+if(btn)btn.textContent=bgmPlaying?'BGM OFF':'BGM ON';
+}
+
+const SAVE_KEY='yosakoi_save';
+function saveGame(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(G));}catch(e){}}
+function loadGame(){try{const d=localStorage.getItem(SAVE_KEY);if(!d)return null;return JSON.parse(d);}catch(e){return null;}}
+function deleteSave(){try{localStorage.removeItem(SAVE_KEY);}catch(e){}}
+function hasSave(){try{return!!localStorage.getItem(SAVE_KEY);}catch(e){return false;}}
+function restoreGame(d){for(const k of Object.keys(d)){if(typeof G[k]==='object'&&G[k]!==null&&!Array.isArray(G[k])){Object.assign(G[k],d[k]);}else{G[k]=d[k];}}}
+let gameStarted=false;
+window.addEventListener('beforeunload',function(e){if(gameStarted){e.preventDefault();e.returnValue='';}});
+
+const TH={i:25000,s:35000,f:46000,j:60000,t:80000};
+const RV_BASE=[
+{n:'BASSARI',br:'C'},{n:'北極星',br:'A'},{n:'奪家白猫',br:'A'},
+{n:'クエスチョン',br:'C'},{n:'偽蕾',br:'C'},{n:'氷',br:'C'},{n:'黒一点',br:'C'},
+{n:'みんなで踊ろうぜ',br:'D'},{n:'働',br:'C'},{n:'炭酸国際大学',br:'D'},{n:'曖＆昧ホールディングス',br:'B'}
+];
+const RV_GEN_RANKS=['S','S','S','S','A','A','A','A','B','B','B','B','B','B','B','B','B','B','B','B','B','C','C','C','C','C','C','D','D'];
+const RV_RANGE={S:[8000,9000],A:[7000,8000],B:[6000,7000],C:[5000,6000],D:[4000,5000],E:[3000,4000],F:[2000,3000]};
+const RV=[];
+(function(){for(const r of RV_BASE)RV.push(r.n);for(let i=1;i<=29;i++)RV.push('チーム'+i);})();
+function shuf(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+function initRivals(){
+const rv={};
+for(const r of RV_BASE){const rng=RV_RANGE[r.br];rv[r.n]={br:r.br,kd:rng[0]+Math.floor(Math.random()*(rng[1]-rng[0]+1))};}
+const sh=shuf([...RV_GEN_RANKS]);
+for(let i=0;i<29;i++){const rk=sh[i],rng=RV_RANGE[rk];rv['チーム'+(i+1)]={br:rk,kd:rng[0]+Math.floor(Math.random()*(rng[1]-rng[0]+1))};}
+return rv;
+}
+function yearlyRivalChange(){
+if(!G.rv)return;
+for(const k of Object.keys(G.rv)){const r=G.rv[k];r.kd=Math.max(1000,Math.min(10000,Math.round(r.kd*(0.85+Math.random()*0.3))));}
+}
+const EB={
+'7-2':{n:'オアシス祭り演舞',ft:5,ex:false,cp:1},
+'7-3':{n:'スカイビール演舞',ft:5,ex:false,cp:1},
+'7-4':{n:'打楽器祭り演舞',ft:5,ex:false,cp:1},
+'8-1':{n:'わっしょい祭り演舞',ft:5,ex:false,cp:1},
+'8-3':{n:'サケ祭り演舞',ft:5,ex:false,cp:1},
+'8-4':{n:'温泉祭り演舞',ft:5,ex:false,cp:1,onsen:true},
+'9-1':{n:'ピエロの街演舞',ft:15,ex:true,cp:2},
+'9-2':{n:'ドキドキフェスティバル演舞',ft:5,ex:false,cp:1},
+'9-4':{n:'黒若祭り演舞',ft:5,ex:false,cp:1},
+'11-3':{n:'キツネ神社演舞',ft:5,ex:false,cp:1},
+};
+const LN={daihyo:'代表班長',furi:'振り班長',sakuhin:'作品班長',kikaku:'企画班長'};
+const QPOOL={
+daihyo:{l:'代表班長',common:[
+{q:'「来年のチーム運営について話がしたいんだけど...」',c:[{t:'チームにはあなたが必要です',b:15},{t:'一緒にもっと上を目指しましょう',b:10},{t:'メンバーの声を聞いて決めよう',b:5},{t:'まだ考え中かな',b:-5},{t:'続けるかどうか、自分で決めてくれ',b:-10}]},
+{q:'「来年の方向性、どう考えてる？」',c:[{t:'今年の経験を活かして飛躍しよう',b:15},{t:'メンバーの意見も聞きながら決めよう',b:10},{t:'色んな可能性を探ってみたい',b:5},{t:'まだわからない',b:-5},{t:'とりあえず去年と同じ感じで',b:-10}]},
+{q:'「正直、チームのこと考えると夜も眠れなくて...」',c:[{t:'その気持ちわかる。一緒に背負おう',b:15},{t:'悩んでるのは本気の証拠だよ',b:10},{t:'たまには忘れてリフレッシュしよう',b:5},{t:'考えすぎじゃない？',b:-5},{t:'そこまで悩むことかな',b:-10}]},
+{q:'「代表として、自分に足りないものって何だと思う？」',c:[{t:'十分やれてる。自信を持って',b:15},{t:'足りないところは一緒に補っていこう',b:10},{t:'自分を客観的に見れるのは良いこと',b:5},{t:'うーん、色々あるかも',b:-5},{t:'正直、結構あるよね',b:-10}]},
+{q:'「他のチームの代表と話す機会があってさ...刺激受けたんだ」',c:[{t:'その経験を活かせるのがあなたの強み',b:15},{t:'いい刺激だね。チームにも還元しよう',b:10},{t:'外の世界を知るのは大事だよね',b:5},{t:'ふーん、で？',b:-5},{t:'よそはよそ、うちはうち',b:-10}]},
+{q:'「メンバーに厳しいこと言わなきゃいけない時、つらいんだよね」',c:[{t:'それができるのはあなただけだ',b:15},{t:'厳しさの中に愛があるから大丈夫',b:10},{t:'言い方を工夫してみたら？',b:5},{t:'まあ嫌われ役は大変だよね',b:-5},{t:'嫌なら言わなきゃいいじゃん',b:-10}]},
+{q:'「来年、もっとメンバーを増やしたいんだけど」',c:[{t:'あなたの情熱があれば人は集まる',b:15},{t:'一緒に勧誘計画を立てよう',b:10},{t:'口コミで広がるといいね',b:5},{t:'増えたら管理が大変じゃない？',b:-5},{t:'今のままでいいんじゃない',b:-10}]},
+{q:'「ぶっちゃけ、来年もやる価値ある？」',c:[{t:'あなたがいないと始まらない',b:15},{t:'もちろん。最高のチームにしよう',b:10},{t:'価値は自分で見つけるものだよ',b:5},{t:'うーん、どうだろうね',b:-5},{t:'無理にやることないよ',b:-10}]},
+{q:'「最近、チーム内の温度差を感じるんだ...」',c:[{t:'あなたが橋渡し役になれる。信じてる',b:15},{t:'みんなで話し合う場を作ろう',b:10},{t:'温度差があるのは自然なこと',b:5},{t:'まあ人それぞれだし',b:-5},{t:'合わない人は辞めてもらえば？',b:-10}]},
+{q:'「チームの伝統って、守るべきだと思う？」',c:[{t:'伝統を守りつつ進化させるのがあなたの役目',b:15},{t:'良い伝統は残して、新しいことにも挑戦しよう',b:10},{t:'時代に合わせて変えていくのもアリ',b:5},{t:'伝統ってそんなに大事？',b:-5},{t:'古いものは捨てた方がいい',b:-10}]},
+{q:'「後輩たちに、何を残してあげられるかな」',c:[{t:'あなたの背中そのものが財産だよ',b:15},{t:'一緒に考えよう。きっと良いものが残せる',b:10},{t:'まずは今を全力でやることかな',b:5},{t:'あんまり考えすぎなくていいよ',b:-5},{t:'後輩は勝手に育つでしょ',b:-10}]},
+{q:'「俺がいなくても回るチームにしたいんだ」',c:[{t:'その考えこそリーダーの器だ',b:15},{t:'でも今はあなたが必要な時期だよ',b:10},{t:'仕組み作りを一緒にやろう',b:5},{t:'そんなこと考えなくていいよ',b:-5},{t:'じゃあ引退しても問題ないね',b:-10}]},
+{q:'「正直、燃え尽きそうになる時もあるんだ」',c:[{t:'休んでもいい。チームはあなたを待つ',b:15},{t:'一人で抱え込まないで。頼ってよ',b:10},{t:'ペース配分も大事だよ',b:5},{t:'気持ちの問題じゃない？',b:-5},{t:'燃え尽きるなら向いてないかも',b:-10}]},
+{q:'「来年の目標、高く設定していい？」',c:[{t:'あなたが掲げる目標なら全力で追いかける',b:15},{t:'高い目標があった方がチームは伸びる',b:10},{t:'現実的なラインも考えておこう',b:5},{t:'プレッシャーにならない？',b:-5},{t:'目標なんてなくても別にいいよ',b:-10}]},
+{q:'「このチームの一番の強みって何だと思う？」',c:[{t:'あなたがまとめてくれるチームワークだよ',b:15},{t:'みんなの情熱。それを引き出すあなたの力',b:10},{t:'色んな個性が集まってるところかな',b:5},{t:'うーん、何だろうね',b:-5},{t:'強みって言われてもなあ',b:-10}]},
+{q:'「最近、他チームの代表に相談されることが増えてきたんだ」',c:[{t:'それはあなたが信頼されてる証拠だ',b:15},{t:'外部との交流がチームにも良い影響を与える',b:10},{t:'忙しくなりすぎないように気をつけてね',b:5},{t:'他チームより自分のチームでしょ',b:-5},{t:'余計な仕事増やさないでよ',b:-10}]},
+{q:'「練習以外のところでチームのために何かできないかな」',c:[{t:'その姿勢がチームを強くしてる',b:15},{t:'環境づくりとか、裏方の仕事も大事だよ',b:10},{t:'無理しない範囲でやれることを探そう',b:5},{t:'練習だけやってればいいんじゃない',b:-5},{t:'余計なことしなくていいよ',b:-10}]},
+{q:'「チーム内に派閥みたいなのができてる気がして...」',c:[{t:'あなたなら全員をまとめられる。信じてる',b:15},{t:'全体で話す機会を増やしてみよう',b:10},{t:'少人数の交流を促進してみたら',b:5},{t:'派閥くらい普通じゃない',b:-5},{t:'勝手にやらせとけばいいよ',b:-10}]},
+{q:'「保護者やOBとの付き合い方、悩むんだよね」',c:[{t:'外部対応もできるのがあなたの凄さ',b:15},{t:'感謝を伝えつつ、適度な距離感を保とう',b:10},{t:'他の班長にも協力してもらおう',b:5},{t:'面倒だよね',b:-5},{t:'そういうの無視していいんじゃない',b:-10}]},
+{q:'「自分の判断が正しいのか、いつも不安なんだ」',c:[{t:'迷いながらも前に進めるのがリーダーの資質',b:15},{t:'相談してくれていい。一緒に考えよう',b:10},{t:'判断に完璧はないよ。やってみることが大事',b:5},{t:'不安なら誰かに任せれば',b:-5},{t:'間違ってることも多いよね',b:-10}]},
+{q:'「練習の出席率が下がってきてるんだけど...」',c:[{t:'原因を一緒に探って対策しよう',b:15},{t:'来やすい雰囲気作りも大事だよね',b:10},{t:'個別に声をかけてみたら',b:5},{t:'来ない人は仕方ないよ',b:-5},{t:'出席率低いのは代表の責任じゃ',b:-10}]},
+{q:'「チームの理念とか、ちゃんと決めた方がいいのかな」',c:[{t:'あなたの想いがそのままチームの理念だよ',b:15},{t:'みんなで話し合って決めるのもいいね',b:10},{t:'大げさじゃなくても、方向性は共有しよう',b:5},{t:'理念とか堅苦しくない？',b:-5},{t:'そんなの必要ないでしょ',b:-10}]},
+{q:'「代表って孤独だなって思う時がある」',c:[{t:'一人じゃない。いつでも隣にいるよ',b:15},{t:'班長たちも頼ってくれて大丈夫',b:10},{t:'孤独を感じるのはそれだけ責任感がある証拠',b:5},{t:'リーダーは孤独なもんだよ',b:-5},{t:'自分で選んだ道でしょ',b:-10}]},
+{q:'「来年の予算のこと、もう考え始めないとなって」',c:[{t:'計画的に考えられるのがあなたの強み',b:15},{t:'一緒に予算計画を立てよう',b:10},{t:'優先順位をつけて効率よくやろう',b:5},{t:'お金の話は面倒だよね',b:-5},{t:'適当でいいんじゃない',b:-10}]},
+{q:'「新しいメンバーと古いメンバーの温度差がね...」',c:[{t:'橋渡しができるのはあなただけだ',b:15},{t:'合同で何かやる機会を作ろう',b:10},{t:'時間が解決する部分もあるよ',b:5},{t:'仕方ないんじゃない',b:-5},{t:'合わないなら無理しなくていいよ',b:-10}]},
+{q:'「大会以外にも何か目標を作りたいんだけど」',c:[{t:'その視野の広さが素晴らしい',b:15},{t:'地域イベントとか、色々可能性はあるね',b:10},{t:'メンバーの意見も聞いてみよう',b:5},{t:'大会だけで十分じゃない',b:-5},{t:'余計なこと増やさなくていいよ',b:-10}]},
+{q:'「みんなの前で話すの、実は緊張するんだ」',c:[{t:'緊張しながらもやれてるのが凄い',b:15},{t:'回数を重ねれば慣れていくよ',b:10},{t:'原稿を用意してみたら楽かも',b:5},{t:'代表なんだからしっかりしてよ',b:-5},{t:'緊張するなら向いてないかも',b:-10}]},
+],conditional:[
+{cond:function(g){var c=g.cr.find(function(r){return r.year===g.yr});return c&&c.rl===5;},q:'「大賞チームの代表として、プレッシャーがすごくて...」',c:[{t:'そのプレッシャーを楽しめるのがあなただ',b:15},{t:'一緒に乗り越えよう。仲間がいる',b:10},{t:'去年は去年。新しい気持ちでいこう',b:5},{t:'プレッシャー感じすぎじゃない？',b:-5},{t:'大賞なんて過去の話だよ',b:-10}]},
+{cond:function(g){var c=g.cr.find(function(r){return r.year===g.yr});return c&&c.rl===4;},q:'「準大賞...あと一歩だったのが悔しくて」',c:[{t:'その悔しさが来年の原動力になる',b:15},{t:'あと一歩まで行けたのはあなたの力',b:10},{t:'来年こそ頂点を取ろう',b:5},{t:'まあ準大賞でも十分すごいよ',b:-5},{t:'結局は取れなかったわけだし',b:-10}]},
+{cond:function(g){var c=g.cr.find(function(r){return r.year===g.yr});return c&&c.rl>=3;},q:'「ファイナルの舞台、忘れられないんだ...」',c:[{t:'あの感動をまた一緒に味わおう',b:15},{t:'ファイナルに立てたのはチーム全員の力',b:10},{t:'来年はもっと上を目指せる',b:5},{t:'まあ良い経験だったね',b:-5},{t:'過去の栄光にすがるのはやめよう',b:-10}]},
+{cond:function(g){var c=g.cr.find(function(r){return r.year===g.yr});return c&&c.rl===0;},q:'「審査落ち...チームに申し訳なくて」',c:[{t:'あなたのせいじゃない。来年一緒にリベンジしよう',b:15},{t:'この経験が必ず活きる。諦めないで',b:10},{t:'原因を分析して改善すればいい',b:5},{t:'まあ結果は結果だから',b:-5},{t:'代表の責任は大きいよね',b:-10}]},
+{cond:function(g){var c=g.cr.filter(function(r){return r.rl===0});return c.length>=2;},q:'「何年も結果が出なくて...このまま続けて意味あるのかな」',c:[{t:'意味は結果だけじゃない。でも来年は変わる',b:15},{t:'積み重ねは必ず報われる。信じよう',b:10},{t:'やり方を変えてみるのもアリだ',b:5},{t:'確かにつらいよね',b:-5},{t:'見切りをつけるのも大事かも',b:-10}]},
+{cond:function(g){return g.ld.daihyo.lv>=50;},q:'「ベテランになって、新しいことに挑戦する気力が薄れてきた気がする」',c:[{t:'経験があるからこそできる挑戦がある',b:15},{t:'マンネリを感じたら変化のチャンス',b:10},{t:'基盤があるから大胆にいける',b:5},{t:'気力は自分で何とかしないと',b:-5},{t:'やる気ないなら仕方ないね',b:-10}]},
+{cond:function(g){return g.ld.daihyo.lv>=80;},q:'「正直、もうやり切った感があるんだよね...」',c:[{t:'あなたにしか見えない景色がまだある',b:15},{t:'後輩にその経験を伝える使命がある',b:10},{t:'新しい役割を見つけてみよう',b:5},{t:'そう感じるなら仕方ないかも',b:-5},{t:'やり切ったなら辞めてもいいよ',b:-10}]},
+{cond:function(g){return g.s.members>=50;},q:'「チームが大きくなって、全員の顔が見えなくなってきた」',c:[{t:'だからこそあなたの存在が重要なんだ',b:15},{t:'班長たちと連携してカバーしよう',b:10},{t:'小グループ制にしてみたら？',b:5},{t:'大所帯は大変だよね',b:-5},{t:'減らした方が楽じゃない？',b:-10}]},
+{cond:function(g){return g.s.members<=15;},q:'「人数が少なくて...迫力で負けちゃうんじゃないかな」',c:[{t:'少数精鋭で心に刺さる演舞をしよう',b:15},{t:'人数じゃない。気持ちで勝とう',b:10},{t:'勧誘も頑張ろう',b:5},{t:'確かに不利かもね',b:-5},{t:'もっと人集めないとダメだよ',b:-10}]},
+{cond:function(g){return g.yr>=3;},q:'「3年もやってると、初心を忘れそうになるんだ」',c:[{t:'初心を思い出させてくれるのがあなただ',b:15},{t:'原点に立ち返る機会を作ろう',b:10},{t:'成長してる証拠だよ',b:5},{t:'まあ慣れるよね',b:-5},{t:'飽きたなら仕方ない',b:-10}]},
+{cond:function(g){return g.yr>=5;},q:'「5年以上やってきて...正直、若い子に任せた方がいいのかなって」',c:[{t:'あなたの経験は誰にも代えられない',b:15},{t:'若い子を育てながら一緒にやろう',b:10},{t:'まだまだ現役でいけるよ',b:5},{t:'世代交代も大事かもね',b:-5},{t:'そろそろ引退してもいいかもね',b:-10}]},
+{cond:function(g){return g.s.yaruki<=50;},q:'「チーム全体のやる気が低い気がして...代表として何とかしなきゃって」',c:[{t:'あなたが焦る必要はない。一緒に立て直そう',b:15},{t:'まずはあなた自身が楽しむことが大事',b:10},{t:'原因を探って対策を考えよう',b:5},{t:'やる気は本人次第だからなあ',b:-5},{t:'代表の責任でしょ',b:-10}]},
+{cond:function(g){var c=g.cr.find(function(r){return r.year===g.yr});return c&&c.rl>=3&&g.yr>=2;},q:'「ファイナル常連って言われるようになって、期待が重い...」',c:[{t:'期待されるチームを作ったのはあなたの功績',b:15},{t:'期待に応えるんじゃなく、超えていこう',b:10},{t:'プレッシャーも楽しんでしまおう',b:5},{t:'期待なんて気にしなくていいよ',b:-5},{t:'期待に応えられないなら辛いね',b:-10}]},
+]},
+furi:{l:'振り班長',common:[
+{q:'「振り付けの方向性、来年どうする？」',c:[{t:'あなたの振り付けをもっと極めたい',b:15},{t:'新しいジャンルにも挑戦してみよう',b:10},{t:'メンバーの意見も取り入れよう',b:5},{t:'去年と同じ路線でいいんじゃない',b:-5},{t:'誰が作っても同じでしょ',b:-10}]},
+{q:'「正直、体力的にキツいときもあって...」',c:[{t:'メンバーの体力管理も一緒に考えよう',b:15},{t:'休みも大事にしながらやろう',b:10},{t:'トレーニングメニューを見直そう',b:5},{t:'まあキツいのは仕方ない',b:-5},{t:'気合で乗り越えろ',b:-10}]},
+{q:'「来年の振り、もっと良くできると思う？」',c:[{t:'あなたなら絶対にもっと良くできる',b:15},{t:'チーム一丸でレベルアップしよう',b:10},{t:'今年の良かった部分を伸ばそう',b:5},{t:'現状維持でも十分だよ',b:-5},{t:'まあぼちぼちやれば',b:-10}]},
+{q:'「練習メニュー、みんなついてこれてるかな...」',c:[{t:'あなたの指導力を信じてる',b:15},{t:'レベル別に分けて練習してみたら？',b:10},{t:'メンバーの様子を見ながら調整しよう',b:5},{t:'ついてこれない方が悪いんじゃ',b:-5},{t:'知らないよ、各自の問題でしょ',b:-10}]},
+{q:'「新しい振りを考えるとき、いつもプレッシャーなんだ」',c:[{t:'そのプレッシャーが良い振りを生む',b:15},{t:'一人で背負わないで。協力するよ',b:10},{t:'他チームの振りも参考にしよう',b:5},{t:'気楽にやればいいじゃん',b:-5},{t:'プレッシャーに弱いね',b:-10}]},
+{q:'「踊りの基礎練って地味だけど、大事なんだよね」',c:[{t:'基礎を大切にする姿勢が素晴らしい',b:15},{t:'基礎がしっかりしてるから本番で輝ける',b:10},{t:'バランスよく取り入れよう',b:5},{t:'もっと派手な練習の方が楽しいけど',b:-5},{t:'基礎練ばっかりだと飽きるよ',b:-10}]},
+{q:'「振りを覚えるの遅いメンバーがいて、どう接したらいい？」',c:[{t:'丁寧に教えるあなたの姿にみんな感動してる',b:15},{t:'個別練の時間を作ってフォローしよう',b:10},{t:'動画を撮って自主練しやすくしよう',b:5},{t:'まあ個人差はあるよね',b:-5},{t:'覚えられない方が悪い',b:-10}]},
+{q:'「体を壊しそうなメンバーがいるんだけど...」',c:[{t:'メンバーの体を守るのも振り班長の大事な仕事',b:15},{t:'無理させないように声をかけていこう',b:10},{t:'休ませる勇気も必要だよ',b:5},{t:'本人に任せればいいんじゃ',b:-5},{t:'練習休むなら出番減らせば',b:-10}]},
+{q:'「他チームの振りを見て、うちとの差を感じることがある」',c:[{t:'うちにはうちの良さがある。自信を持って',b:15},{t:'いい刺激にして取り入れよう',b:10},{t:'差があるなら埋める努力をしよう',b:5},{t:'比べてもしょうがなくない？',b:-5},{t:'やっぱりうちは劣ってるのかな',b:-10}]},
+{q:'「本番で振りを間違える人がいると、やっぱり気になるんだ」',c:[{t:'完璧を目指すその姿勢がチームを高める',b:15},{t:'ミスを減らす練習方法を一緒に考えよう',b:10},{t:'本番は気持ちが大事。多少のミスはOK',b:5},{t:'間違えるのは仕方ないよ',b:-5},{t:'気にしすぎでしょ',b:-10}]},
+{q:'「新メンバーに振りを教えるの、結構エネルギー使うんだよね」',c:[{t:'その教える力がチームの底上げになってる',b:15},{t:'先輩メンバーにも教える役を分担しよう',b:10},{t:'教え方のマニュアル作ったらどう？',b:5},{t:'まあ大変だよね',b:-5},{t:'それくらいやってよ',b:-10}]},
+{q:'「衣装と振りの相性って考えてる？」',c:[{t:'そこまで考えてくれるのがあなたの凄さ',b:15},{t:'作品班長と連携して最高のものにしよう',b:10},{t:'見栄えは大事だよね',b:5},{t:'あんまり考えたことない',b:-5},{t:'衣装は関係ないでしょ',b:-10}]},
+{q:'「メンバーのフォーメーション、もっと工夫したいんだけど」',c:[{t:'あなたのフォーメーションはいつも感動する',b:15},{t:'一緒に研究して新パターンを開発しよう',b:10},{t:'動画で他チームの参考にしてみたら',b:5},{t:'今のままでいいんじゃない',b:-5},{t:'フォーメーションなんて誰も見てないよ',b:-10}]},
+{q:'「正直、自分の振りに自信が持てないときがある」',c:[{t:'あなたの振りはチームの誇りだ',b:15},{t:'自信がないときこそ成長のチャンス',b:10},{t:'客観的な意見をもらうのもいいね',b:5},{t:'自信は自分でつけるしかないよ',b:-5},{t:'自信ないなら誰かに任せたら',b:-10}]},
+{q:'「来年は振りの難易度、上げたいんだけどどう思う？」',c:[{t:'あなたの挑戦を全力で支える',b:15},{t:'メンバーの成長に合わせてレベルアップしよう',b:10},{t:'できる範囲で少しずつ上げよう',b:5},{t:'無理しなくていいんじゃない',b:-5},{t:'今のレベルで十分だよ',b:-10}]},
+{q:'「練習動画を見返すと、改善点ばかり目につくんだ」',c:[{t:'それだけ高い目を持ってるってこと',b:15},{t:'改善点が見えるのは成長のチャンス',b:10},{t:'良いところも一緒に見つけよう',b:5},{t:'あまり完璧を求めすぎないでよ',b:-5},{t:'動画なんて見なくていいよ',b:-10}]},
+{q:'「振り付けのインスピレーションって、どこから来ると思う？」',c:[{t:'あなたの感性そのものがインスピレーション',b:15},{t:'日常の色んな体験から生まれるんだよね',b:10},{t:'他のダンスジャンルも見てみたら',b:5},{t:'そんなこと聞かれても',b:-5},{t:'どこでもいいから早く作ってよ',b:-10}]},
+{q:'「メンバーの踊りの個性を活かしたいんだけど、統一感も大事で...」',c:[{t:'そのバランス感覚があなたの才能だ',b:15},{t:'個性を活かしつつ要所で揃える方法を考えよう',b:10},{t:'ソロパートとか作ってみたら',b:5},{t:'統一感の方が大事じゃない',b:-5},{t:'個性なんて気にしなくていいよ',b:-10}]},
+{q:'「筋トレと踊りの練習のバランスが難しくて」',c:[{t:'体づくりも含めてあなたの専門性だ',b:15},{t:'トレーナーに相談してみるのもアリだね',b:10},{t:'週ごとにメニューを変えてみたら',b:5},{t:'踊りだけやればいいんじゃ',b:-5},{t:'そこまで考えなくていいよ',b:-10}]},
+{q:'「振り落としの時間がいつも足りなくて...」',c:[{t:'効率的に教えられるのはあなたの力',b:15},{t:'事前に動画を配布して予習してもらおう',b:10},{t:'パートリーダーを決めて分担しよう',b:5},{t:'覚えるのは各自の責任でしょ',b:-5},{t:'時間ないなら簡単にすればいいじゃん',b:-10}]},
+{q:'「ケガをした時、自分が踊れないのが一番つらい」',c:[{t:'あなたが元気でいてくれることが一番大事',b:15},{t:'見る側に回ると新しい発見もあるよ',b:10},{t:'しっかり治して万全で戻ろう',b:5},{t:'ケガは自己管理の問題じゃ',b:-5},{t:'踊れないなら仕方ないね',b:-10}]},
+{q:'「踊りのスタイル、毎年変えるべきかな」',c:[{t:'あなたのスタイルを軸に進化させよう',b:15},{t:'核はブレずに、表現の幅を広げよう',b:10},{t:'メンバーの意見も参考にしてみよう',b:5},{t:'変えなくていいんじゃない',b:-5},{t:'何でもいいよ、適当に決めて',b:-10}]},
+{q:'「本番前の緊張感が好きなんだけど、プレッシャーでもあって」',c:[{t:'緊張を楽しめるのがプロの証だ',b:15},{t:'その緊張が最高のパフォーマンスを引き出す',b:10},{t:'ルーティンを作って落ち着こう',b:5},{t:'緊張しすぎじゃない',b:-5},{t:'プレッシャーに弱いね',b:-10}]},
+{q:'「最近、踊りの表現力について悩んでるんだ」',c:[{t:'悩めること自体が表現者として一流の証',b:15},{t:'色んな舞台を見て刺激を受けよう',b:10},{t:'基本に立ち返ってみるのもいいかも',b:5},{t:'表現力って何だろうね',b:-5},{t:'深く考えすぎじゃない',b:-10}]},
+{q:'「音楽をもっと体で感じられるようになりたい」',c:[{t:'音と一体になれるのがあなたの魅力',b:15},{t:'色んなジャンルの音楽を聴いてみよう',b:10},{t:'リズムトレーニングを取り入れよう',b:5},{t:'今のままで十分じゃない',b:-5},{t:'音楽は作品班の仕事でしょ',b:-10}]},
+{q:'「後輩の振り付けセンス、自分を超えてるかもって思う時がある」',c:[{t:'後輩を育てたあなたの功績だ',b:15},{t:'互いに刺激し合えるのは素晴らしいこと',b:10},{t:'負けたくないって気持ちも大事にしよう',b:5},{t:'後輩に抜かれるのは仕方ない',b:-5},{t:'じゃあ後輩に任せたら',b:-10}]},
+{q:'「練習中に怒ることがあるんだけど、嫌われたくないし...」',c:[{t:'本気だからこそ怒れる。みんなわかってる',b:15},{t:'怒った後のフォローを大切にしよう',b:10},{t:'伝え方を工夫してみよう',b:5},{t:'怒らない方がいいよ',b:-5},{t:'怒るなんてパワハラだよ',b:-10}]},
+],conditional:[
+{cond:function(g){var c=g.cr.find(function(r){return r.year===g.yr});return c&&c.rl===5;},q:'「大賞の振り...来年超えなきゃって思うと怖い」',c:[{t:'超えるんじゃなく、新しい感動を作ろう',b:15},{t:'あの振りを作れたあなたなら大丈夫',b:10},{t:'プレッシャーを力に変えよう',b:5},{t:'まあ大変だよね',b:-5},{t:'超えられなかったらどうするの',b:-10}]},
+{cond:function(g){var c=g.cr.find(function(r){return r.year===g.yr});return c&&c.rl===0;},q:'「審査で評価されなかった...振りが悪かったのかな」',c:[{t:'振りの問題じゃない。総合力で勝負しよう',b:15},{t:'審査員の好みもある。気にしすぎないで',b:10},{t:'反省点を次に活かそう',b:5},{t:'まあ色々要因はあるよね',b:-5},{t:'確かに振りに問題あったかも',b:-10}]},
+{cond:function(g){return g.ld.furi.lv>=50;},q:'「ここまでレベル上げてきて...まだ伸びしろあるかな」',c:[{t:'あなたの可能性は無限大だ',b:15},{t:'高いレベルだからこそ見える世界がある',b:10},{t:'違う角度からアプローチしてみよう',b:5},{t:'もう十分じゃない？',b:-5},{t:'限界かもね',b:-10}]},
+{cond:function(g){return g.ld.furi.lv>=80;},q:'「もう教えることの方が楽しくなってきた気がする」',c:[{t:'教える喜びも振り班長の醍醐味だ',b:15},{t:'後輩を育てながら自分も成長できる',b:10},{t:'指導者としての道もいいね',b:5},{t:'踊る方は飽きた？',b:-5},{t:'教えるだけなら誰でもできるよ',b:-10}]},
+{cond:function(g){return g.s.members>=50;},q:'「人数多いと振りを揃えるの本当に大変で...」',c:[{t:'大人数を揃えられるのはあなたの指導力',b:15},{t:'パート分けで工夫してみよう',b:10},{t:'揃った時の迫力は武器になる',b:5},{t:'まあ少人数の方が楽だけどね',b:-5},{t:'揃わないなら人数減らせば',b:-10}]},
+{cond:function(g){return g.s.members<=15;},q:'「少人数だと一人一人の踊りが目立つから、ごまかせないんだよね」',c:[{t:'だからこそ、一人一人が輝ける振りを作ろう',b:15},{t:'少数精鋭の強みを活かした振りにしよう',b:10},{t:'個々のレベルアップに力を入れよう',b:5},{t:'確かにプレッシャーだよね',b:-5},{t:'ごまかせないならキツいね',b:-10}]},
+{cond:function(g){return g.yr>=3;},q:'「3年もやってると振りのネタが尽きてきて...」',c:[{t:'あなたの引き出しはまだまだ深い',b:15},{t:'他ジャンルのダンスからヒントを得よう',b:10},{t:'過去の振りをアレンジするのもアリ',b:5},{t:'ネタ切れは辛いね',b:-5},{t:'同じような振りでいいんじゃない',b:-10}]},
+{cond:function(g){return g.yr>=5;},q:'「5年以上振り付けしてきたけど...新鮮さを保てるか不安」',c:[{t:'あなたの経験値が新鮮さを生み出せる',b:15},{t:'若手の感性も取り入れて融合させよう',b:10},{t:'新しいことに挑戦する姿が刺激になる',b:5},{t:'マンネリは仕方ないよ',b:-5},{t:'そろそろ若い人に任せたら',b:-10}]},
+{cond:function(g){return g.s.odori>=7000;},q:'「踊りのレベルがここまで上がって...ここからどう伸ばす？」',c:[{t:'表現力を磨いて感動を生む踊りにしよう',b:15},{t:'技術の先にある"心"を追求しよう',b:10},{t:'細部の精度をさらに上げよう',b:5},{t:'もう十分上手いよ',b:-5},{t:'これ以上は無理じゃない',b:-10}]},
+{cond:function(g){return g.s.tairyoku<=3000;},q:'「メンバーの体力が心配...振りの負荷を下げた方がいいかな」',c:[{t:'体力作りと振りの両立を一緒に考えよう',b:15},{t:'メリハリのある振りで体力を温存しよう',b:10},{t:'体力トレーニングも強化しよう',b:5},{t:'負荷下げたら見栄えが...',b:-5},{t:'体力ないのはメンバーの問題でしょ',b:-10}]},
+{cond:function(g){var c=g.cr.find(function(r){return r.year===g.yr});return c&&c.rl>=3;},q:'「ファイナルの舞台で踊れて...あの感覚が忘れられない」',c:[{t:'あの感動をまた一緒に味わおう',b:15},{t:'あの舞台に立てたのはあなたの振りのおかげ',b:10},{t:'来年はもっと良い振りで挑もう',b:5},{t:'いい思い出だったね',b:-5},{t:'過去の話はもういいよ',b:-10}]},
+{cond:function(g){var c=g.cr.find(function(r){return r.year===g.yr});return c&&c.rl===4;},q:'「準大賞の振り...あと何が足りなかったんだろう」',c:[{t:'足りないものを一緒に見つけて超えよう',b:15},{t:'あの振りは十分素晴らしかった',b:10},{t:'審査の傾向を分析してみよう',b:5},{t:'足りないものは色々あるんじゃ',b:-5},{t:'振りだけの問題じゃないでしょ',b:-10}]},
+]},
+sakuhin:{l:'作品班長',common:[
+{q:'「来年の作品、どんなテーマにしたい？」',c:[{t:'あなたのセンスに任せたい',b:15},{t:'みんなでアイデアを出し合おう',b:10},{t:'今年の反省を活かしたテーマがいいな',b:5},{t:'まだ早くない？',b:-5},{t:'何でもいいから早く決めて',b:-10}]},
+{q:'「今年の作品、正直どう思った？」',c:[{t:'素晴らしかった。来年はさらに超えよう',b:15},{t:'良い部分を活かして改善しよう',b:10},{t:'課題も見えたけど成長できた',b:5},{t:'まあまあだったかな',b:-5},{t:'正直微妙だった',b:-10}]},
+{q:'「作品作りって孤独なときもあるんだよね...」',c:[{t:'いつでも相談してほしい。支えるから',b:15},{t:'チーム全体でサポートするよ',b:10},{t:'作品班のメンバーと分担しよう',b:5},{t:'クリエイターはみんなそうでしょ',b:-5},{t:'それは自分で何とかして',b:-10}]},
+{q:'「構成って、お客さんにちゃんと伝わってるのかな...」',c:[{t:'あなたの構成はいつも心に響く',b:15},{t:'伝わってる。自信を持って',b:10},{t:'アンケートを取ってみるのもアリだね',b:5},{t:'わからないけど大丈夫じゃない',b:-5},{t:'伝わってないかもね',b:-10}]},
+{q:'「声の演出、もっと工夫できると思うんだけど」',c:[{t:'あなたの耳の良さがチームの武器だ',b:15},{t:'声の練習方法を一緒に研究しよう',b:10},{t:'他チームの声出しも参考にしてみよう',b:5},{t:'今のままでいいんじゃない',b:-5},{t:'声なんてそんなに重要？',b:-10}]},
+{q:'「衣装のデザイン、来年はもっとこだわりたい」',c:[{t:'あなたのこだわりがチームの個性を作る',b:15},{t:'予算と相談しながら最高のものを作ろう',b:10},{t:'メンバーの意見も聞いてみたら',b:5},{t:'こだわりすぎると大変じゃない',b:-5},{t:'衣装なんて何でもいいよ',b:-10}]},
+{q:'「音楽と振りの融合、もっと追求したいんだ」',c:[{t:'その探究心があなたの作品を特別にする',b:15},{t:'振り班長と密に連携していこう',b:10},{t:'色んな音楽を聴いてインスピレーションを得よう',b:5},{t:'今のままでも十分じゃない',b:-5},{t:'こだわりすぎだよ',b:-10}]},
+{q:'「作品のストーリー性、どのくらい重視すべきかな」',c:[{t:'あなたのストーリーテリングはチームの強み',b:15},{t:'ストーリーがあると感動が深まるよ',b:10},{t:'バランスを考えながら入れよう',b:5},{t:'難しく考えなくていいよ',b:-5},{t:'ストーリーより踊りでしょ',b:-10}]},
+{q:'「他チームの作品を見ると、自分のが地味に感じることがある」',c:[{t:'うちの作品には唯一無二の魅力がある',b:15},{t:'派手さより深さで勝負しよう',b:10},{t:'参考にしつつ、うちらしさを大切にしよう',b:5},{t:'まあ地味は地味かもね',b:-5},{t:'もっと派手にした方がいいんじゃ',b:-10}]},
+{q:'「演出のアイデアが浮かばないとき、どうしたらいい？」',c:[{t:'あなたの才能を信じてる。必ず閃く',b:15},{t:'チームみんなでブレストしよう',b:10},{t:'日常の中にヒントがあるかも',b:5},{t:'焦らなくていいんじゃない',b:-5},{t:'アイデア出ないなら向いてないかも',b:-10}]},
+{q:'「照明とか小道具の使い方、もっと研究したい」',c:[{t:'細部へのこだわりが最高の作品を作る',b:15},{t:'一緒に他チームの演出を研究しよう',b:10},{t:'新しいアイテムを試してみよう',b:5},{t:'そこまでやる必要ある？',b:-5},{t:'小道具とか面倒くさくない？',b:-10}]},
+{q:'「メンバーの表情演技、もっと指導したいんだけど」',c:[{t:'表情まで見てるのがあなたの凄さ',b:15},{t:'表情が変わると作品が一気にレベルアップする',b:10},{t:'鏡を使った練習を取り入れよう',b:5},{t:'表情ってそんなに大事？',b:-5},{t:'自然にやればいいでしょ',b:-10}]},
+{q:'「来年の曲、もう頭の中で鳴ってるんだ」',c:[{t:'そのワクワク感が最高の作品を生む',b:15},{t:'早く聴いてみたい！楽しみ',b:10},{t:'イメージを形にする作業が楽しみだね',b:5},{t:'気が早くない？',b:-5},{t:'まだ今年終わってないんだけど',b:-10}]},
+{q:'「観客を泣かせる作品、作りたいんだよね」',c:[{t:'あなたならきっとできる。全力で支える',b:15},{t:'感動の種はチームの中にある',b:10},{t:'心に響くテーマを一緒に探そう',b:5},{t:'泣かせるって大変だよ',b:-5},{t:'泣かせなくてもいいんじゃない',b:-10}]},
+{q:'「正直、自分の作品が好きになれないときがあるんだ」',c:[{t:'あなたの作品でみんなが笑顔になってる',b:15},{t:'完璧主義なのはクリエイターの証',b:10},{t:'客観的に見ると素晴らしい作品だよ',b:5},{t:'好きになれないなら変えれば？',b:-5},{t:'じゃあ誰かに代わってもらえば',b:-10}]},
+{q:'「曲選びが一番悩むんだよね...」',c:[{t:'こだわって選ぶからこそ良い作品ができる',b:15},{t:'みんなで候補を出し合うのもいいかも',b:10},{t:'直感を信じてみたら',b:5},{t:'何でもいいんじゃない',b:-5},{t:'曲なんてどれも同じでしょ',b:-10}]},
+{q:'「他チームと被らないオリジナリティって、どう出せばいいのかな」',c:[{t:'あなたの感性そのものがオリジナリティだ',b:15},{t:'チームのストーリーを作品に込めよう',b:10},{t:'意外な組み合わせを試してみたら',b:5},{t:'被ってても気にしなくていいよ',b:-5},{t:'オリジナリティなんて無理でしょ',b:-10}]},
+{q:'「作品のテンポ配分、うまくいかないことが多くて」',c:[{t:'試行錯誤できるのがあなたの強み',b:15},{t:'お客さんの目線で見直してみよう',b:10},{t:'他チームの構成を参考にしてみたら',b:5},{t:'テンポなんて適当でいいよ',b:-5},{t:'毎回同じ感じでいいんじゃない',b:-10}]},
+{q:'「作品の世界観を統一するのが難しい」',c:[{t:'その細部へのこだわりが名作を生む',b:15},{t:'コンセプトシートを作ってみたら',b:10},{t:'まずは核になるイメージを固めよう',b:5},{t:'世界観って必要？',b:-5},{t:'難しく考えすぎだよ',b:-10}]},
+{q:'「観客の反応が気になって、本番中も客席を見ちゃうんだ」',c:[{t:'お客さんのことを考えられるのはプロの証',b:15},{t:'反応が良い瞬間を分析して次に活かそう',b:10},{t:'まずは自分たちの演舞に集中しよう',b:5},{t:'観客なんて気にしなくていいよ',b:-5},{t:'自分の仕事に集中してよ',b:-10}]},
+{q:'「他の班長との連携、もっとうまくやりたい」',c:[{t:'あなたから声をかけるだけで変わるよ',b:15},{t:'定期的に意見交換の場を設けよう',b:10},{t:'まずは振り班長と密にやってみたら',b:5},{t:'各自が頑張ればいいんじゃ',b:-5},{t:'連携なんて面倒でしょ',b:-10}]},
+{q:'「作品の冒頭をどうするか、いつも悩む」',c:[{t:'冒頭にこだわるのが名作の秘訣',b:15},{t:'インパクトのあるオープニングを一緒に考えよう',b:10},{t:'色んなパターンを試してみよう',b:5},{t:'冒頭より中身が大事じゃない',b:-5},{t:'適当に始めればいいよ',b:-10}]},
+{q:'「ラストシーンの演出で泣きそうになることがある」',c:[{t:'作り手が感動する作品は絶対に伝わる',b:15},{t:'その感性を大切にしてほしい',b:10},{t:'感情を込められる作品って素晴らしいね',b:5},{t:'泣くほどのことかな',b:-5},{t:'大げさだよ',b:-10}]},
+{q:'「衣装の制作費、もう少し抑えられないかなって」',c:[{t:'予算内で最高のものを作るのもあなたの腕の見せ所',b:15},{t:'素材を工夫してコスパを上げよう',b:10},{t:'優先順位をつけてメリハリを',b:5},{t:'ケチくさくない？',b:-5},{t:'衣装にお金かけなくていいよ',b:-10}]},
+{q:'「作品に込めたメッセージ、ちゃんと言語化した方がいいのかな」',c:[{t:'言葉にすることで作品がさらに深まる',b:15},{t:'メンバーと共有するためにもいいね',b:10},{t:'感覚で伝わる部分もあるから無理しなくても',b:5},{t:'メッセージなんて必要ない',b:-5},{t:'考えすぎだよ',b:-10}]},
+{q:'「完成した作品を初めてメンバーに見せる瞬間が怖い」',c:[{t:'その緊張感があなたの本気の証',b:15},{t:'メンバーはいつもワクワクして待ってるよ',b:10},{t:'フィードバックをもらって磨いていこう',b:5},{t:'怖がることないよ',b:-5},{t:'いちいち気にしすぎ',b:-10}]},
+{q:'「他のチームの作品班長と情報交換したいんだけど」',c:[{t:'その向上心が素晴らしい',b:15},{t:'交流から生まれるアイデアもあるよね',b:10},{t:'SNSとかで繋がってみたら',b:5},{t:'ライバルに手の内見せていいの',b:-5},{t:'そんな暇あるなら自分の作品やれば',b:-10}]},
+],conditional:[
+{cond:function(g){var c=g.cr.find(function(r){return r.year===g.yr});return c&&c.rl===5;},q:'「大賞の作品...来年もあのレベルを出せるか不安」',c:[{t:'あなたの才能は一発屋じゃない',b:15},{t:'大賞の経験が来年の作品を更に高める',b:10},{t:'新しい挑戦で違う感動を生もう',b:5},{t:'プレッシャーだよね',b:-5},{t:'超えられなかったらどうする？',b:-10}]},
+{cond:function(g){var c=g.cr.find(function(r){return r.year===g.yr});return c&&c.rl===0;},q:'「審査で認められなかった...作品が悪かったのかな」',c:[{t:'あの作品は最高だった。審査がすべてじゃない',b:15},{t:'悔しさをバネに来年もっといい作品を作ろう',b:10},{t:'客観的に分析して改善しよう',b:5},{t:'まあ結果が全てだし',b:-5},{t:'正直、作品に問題あったかも',b:-10}]},
+{cond:function(g){return g.ld.sakuhin.lv>=50;},q:'「レベルが上がるほど、自分に期待しすぎちゃうんだ」',c:[{t:'高みを目指す姿勢が作品をさらに良くする',b:15},{t:'完璧じゃなくていい。あなたらしさが大事',b:10},{t:'時には肩の力を抜いてみよう',b:5},{t:'期待しすぎは良くないよ',b:-5},{t:'気にしすぎじゃない',b:-10}]},
+{cond:function(g){return g.ld.sakuhin.lv>=80;},q:'「ここまでやってきて...もう新しい表現はないんじゃないかって」',c:[{t:'あなたの表現の可能性は無限だ',b:15},{t:'異分野からインスピレーションを得よう',b:10},{t:'原点に立ち返ってみるのもアリ',b:5},{t:'そう感じるのも自然かも',b:-5},{t:'限界なら仕方ないね',b:-10}]},
+{cond:function(g){return g.s.members>=50;},q:'「大人数をどう見せるか...作品の構成力が試される」',c:[{t:'大人数を活かす構成はあなたにしかできない',b:15},{t:'人海戦術の迫力を武器にしよう',b:10},{t:'グループ分けで変化をつけよう',b:5},{t:'人数多いと大変だよね',b:-5},{t:'人多すぎてまとまらないんじゃ',b:-10}]},
+{cond:function(g){return g.s.members<=15;},q:'「少人数でどうやってインパクトを出すか...」',c:[{t:'少人数だからこそ繊細な表現ができる',b:15},{t:'一人一人の存在感を最大限に活かそう',b:10},{t:'小道具や演出で工夫しよう',b:5},{t:'確かに難しいよね',b:-5},{t:'人数少ないとキツいよね',b:-10}]},
+{cond:function(g){return g.yr>=3;},q:'「3年も作品作ってると、マンネリ化が怖い」',c:[{t:'あなたの引き出しの深さを信じてる',b:15},{t:'新しいジャンルに挑戦してみよう',b:10},{t:'メンバーの意見を取り入れて新風を',b:5},{t:'マンネリもある程度仕方ない',b:-5},{t:'同じようなのでいいんじゃない',b:-10}]},
+{cond:function(g){return g.yr>=5;},q:'「5年以上作品を作ってきたけど...集大成を作りたい」',c:[{t:'あなたの集大成、絶対に最高のものになる',b:15},{t:'これまでの全てを詰め込んだ作品にしよう',b:10},{t:'新しい挑戦との融合もいいね',b:5},{t:'集大成って大げさじゃない',b:-5},{t:'毎年同じようなもんでしょ',b:-10}]},
+{cond:function(g){return g.s.kousei>=7000;},q:'「構成のレベルがここまで来ると、細部にこだわりたくなる」',c:[{t:'その細部へのこだわりが大きな差を生む',b:15},{t:'全体のバランスも見ながら追求しよう',b:10},{t:'こだわりポイントを絞ろう',b:5},{t:'細部まで見てる人いるかな',b:-5},{t:'こだわりすぎて自己満にならない？',b:-10}]},
+{cond:function(g){return g.s.koe>=7000;},q:'「声のレベルが上がってきた。もっと声を活かした構成にしたい」',c:[{t:'声の力を最大限に引き出す作品にしよう',b:15},{t:'声と踊りの融合で唯一無二の作品を',b:10},{t:'声のバリエーションを増やしてみよう',b:5},{t:'声にこだわりすぎなくても',b:-5},{t:'声より踊りが大事じゃない',b:-10}]},
+{cond:function(g){var c=g.cr.find(function(r){return r.year===g.yr});return c&&c.rl>=3;},q:'「ファイナルの舞台で見た他チームの作品に衝撃を受けた」',c:[{t:'その刺激を来年の作品に昇華しよう',b:15},{t:'ファイナルだからこそ出会える作品がある',b:10},{t:'良いところは素直に取り入れよう',b:5},{t:'他チームは気にしなくていいよ',b:-5},{t:'うちの方がよかったでしょ',b:-10}]},
+{cond:function(g){var c=g.cr.find(function(r){return r.year===g.yr});return c&&c.rl===4;},q:'「準大賞の作品...大賞との差はどこだったんだろう」',c:[{t:'差は紙一重。来年は必ず超える',b:15},{t:'あの作品は審査員にも深く刺さったはず',b:10},{t:'冷静に分析して次に活かそう',b:5},{t:'差なんてわからないよ',b:-5},{t:'作品力が足りなかったんじゃ',b:-10}]},
+]},
+kikaku:{l:'企画班長',common:[
+{q:'「来年のイベント企画、どうしようか...」',c:[{t:'あなたの企画力はチームの宝だ',b:15},{t:'今年の企画も最高だった、来年も楽しみ',b:10},{t:'メンバーの要望を聞いてみよう',b:5},{t:'まだ考えなくていいんじゃ',b:-5},{t:'適当にやっといて',b:-10}]},
+{q:'「メンバー同士の関係、もっと良くしたいんだけど」',c:[{t:'一緒にチームワークを高めていこう',b:15},{t:'新しい交流の場も考えてみよう',b:10},{t:'少人数の交流会とかどう？',b:5},{t:'関係って自然にできるもんじゃ',b:-5},{t:'勝手にやってくれ',b:-10}]},
+{q:'「ぶっちゃけ、来年もやる価値ある？」',c:[{t:'あなたがいないと始まらない',b:15},{t:'もちろん。最高のチームにしよう',b:10},{t:'やる価値は自分たちで作るもの',b:5},{t:'うーん、どうだろうね',b:-5},{t:'価値を感じないなら辞めてもいいよ',b:-10}]},
+{q:'「企画って裏方だから、あんまり評価されないんだよね」',c:[{t:'裏方の力がチームを支えてる。感謝してる',b:15},{t:'メンバーみんなあなたの企画を楽しみにしてる',b:10},{t:'評価されなくても、チームの雰囲気に影響してる',b:5},{t:'まあ裏方は仕方ないよ',b:-5},{t:'評価が欲しいなら他のことやれば',b:-10}]},
+{q:'「合宿の企画、もっと充実させたいんだけど」',c:[{t:'あなたの合宿企画はチームの絆を深めてる',b:15},{t:'練習と交流のバランスを工夫しよう',b:10},{t:'メンバーから合宿の感想を集めてみよう',b:5},{t:'今のままでいいんじゃない',b:-5},{t:'合宿なんてやらなくても',b:-10}]},
+{q:'「新メンバーが馴染めるように、もっと工夫したい」',c:[{t:'あなたの気配りがチームの温かさを作ってる',b:15},{t:'先輩後輩の交流会を企画してみよう',b:10},{t:'メンター制度を導入してみたら',b:5},{t:'馴染めないのは本人の問題じゃ',b:-5},{t:'放っとけばそのうち馴染むよ',b:-10}]},
+{q:'「チームのSNS発信、もっと頑張りたいんだ」',c:[{t:'あなたの発信力でチームの魅力を広めよう',b:15},{t:'練習風景の動画とか反響ありそう',b:10},{t:'担当を分けて定期的に更新しよう',b:5},{t:'SNSって面倒じゃない',b:-5},{t:'SNSなんてやらなくていいよ',b:-10}]},
+{q:'「BBQとか飲み会、どのくらいの頻度がいいかな」',c:[{t:'あなたが考える頻度がベスト。任せる',b:15},{t:'練習の区切りでやるとメリハリがつくね',b:10},{t:'予算とメンバーの負担を考慮しよう',b:5},{t:'そういうのは各自でやればいいのでは',b:-5},{t:'飲み会とか時間の無駄じゃない',b:-10}]},
+{q:'「チームグッズとか作ったら盛り上がるかな」',c:[{t:'あなたのセンスで最高のグッズを作ろう',b:15},{t:'メンバーの一体感が高まるね',b:10},{t:'デザインをみんなで決めるのも楽しそう',b:5},{t:'お金かかるから微妙じゃない',b:-5},{t:'グッズなんていらないよ',b:-10}]},
+{q:'「運動会の企画、みんな楽しんでくれるかな」',c:[{t:'あなたの企画ならみんな絶対楽しめる',b:15},{t:'チーム対抗にすると盛り上がりそう',b:10},{t:'体力づくりにもなって一石二鳥だね',b:5},{t:'まあ好き嫌いはあるよね',b:-5},{t:'運動会って子供っぽくない？',b:-10}]},
+{q:'「他チームとの交流イベント、やってみたいんだけど」',c:[{t:'その行動力がチームを成長させる',b:15},{t:'他チームから学ぶことも多いよね',b:10},{t:'合同練習から始めてみよう',b:5},{t:'うちのことで手一杯じゃない',b:-5},{t:'他チームと交流する意味あるの',b:-10}]},
+{q:'「メンバーの誕生日祝い、続けた方がいいよね？」',c:[{t:'その心遣いがチームの温かさの源',b:15},{t:'みんな喜んでるよ。続けよう',b:10},{t:'簡単なものでも気持ちが大事',b:5},{t:'毎回やるの大変じゃない',b:-5},{t:'そういうのいらないでしょ',b:-10}]},
+{q:'「チーム内のコミュニケーション、もっと活性化したい」',c:[{t:'あなたがいるからチームの雰囲気が明るい',b:15},{t:'LINEグループの使い方を工夫してみよう',b:10},{t:'定期的なミーティングを設けよう',b:5},{t:'コミュニケーションは自然にできるもんだよ',b:-5},{t:'余計なことしなくていいよ',b:-10}]},
+{q:'「演舞イベントの打ち上げ、毎回盛り上がるんだけどマンネリかな」',c:[{t:'マンネリじゃない。定番だからこそ安心感がある',b:15},{t:'たまには変わった場所でやってみよう',b:10},{t:'サプライズ企画を入れてみたら',b:5},{t:'打ち上げなんてどこでもいいよ',b:-5},{t:'打ち上げいらなくない？',b:-10}]},
+{q:'「正直、企画の仕事って終わりがないんだよね」',c:[{t:'その献身的な姿勢に感謝してる',b:15},{t:'無理しないで、分担しよう',b:10},{t:'優先順位をつけて効率よくやろう',b:5},{t:'まあ大変だよね',b:-5},{t:'自分で選んだ仕事でしょ',b:-10}]},
+{q:'「チームのルール作り、もっとちゃんとした方がいいかな」',c:[{t:'あなたが作るルールならみんな納得する',b:15},{t:'最低限のルールで、あとは信頼で回そう',b:10},{t:'メンバーの意見も聞きながら決めよう',b:5},{t:'ルールなんて窮屈じゃない',b:-5},{t:'勝手にやらせとけばいいよ',b:-10}]},
+{q:'「チームのホームページとか動画チャンネル、やるべきかな」',c:[{t:'あなたの発想力なら最高のものができる',b:15},{t:'発信力を高めるのは大事だよね',b:10},{t:'まずは簡単なものから始めてみよう',b:5},{t:'手間がかかりすぎない？',b:-5},{t:'そんなの誰も見ないよ',b:-10}]},
+{q:'「忘年会の企画、もう考え始めないと」',c:[{t:'あなたの忘年会はみんなの楽しみ',b:15},{t:'今年一年の振り返りもできるといいね',b:10},{t:'幹事を手伝ってくれる人を募ろう',b:5},{t:'忘年会なんて適当でいいよ',b:-5},{t:'やらなくてもいいんじゃない',b:-10}]},
+{q:'「練習場所の確保が大変で...」',c:[{t:'裏方の努力がチームを支えてる',b:15},{t:'代表にも相談して分担しよう',b:10},{t:'新しい場所を開拓してみよう',b:5},{t:'場所なんてどこでもいいじゃん',b:-5},{t:'それは企画の仕事じゃないでしょ',b:-10}]},
+{q:'「チーム内のアンケートとか取った方がいいかな」',c:[{t:'メンバーの声を聞こうとする姿勢が素晴らしい',b:15},{t:'匿名で本音が聞けるといいね',b:10},{t:'定期的にやると改善点が見えるよ',b:5},{t:'アンケートなんて面倒くさいでしょ',b:-5},{t:'聞いても意味ないんじゃ',b:-10}]},
+{q:'「遠征の手配が毎回大変なんだよね」',c:[{t:'その段取り力がチームの遠征を成功させてる',b:15},{t:'チェックリストを作って効率化しよう',b:10},{t:'担当を分けて負担を減らそう',b:5},{t:'遠征なんて行かなくてもいいのに',b:-5},{t:'自分で何とかしてよ',b:-10}]},
+{q:'「チーム写真とか記録、もっと残しておきたいんだ」',c:[{t:'記録を大切にする気持ちがチームの歴史を作る',b:15},{t:'写真係を決めて定期的に撮ろう',b:10},{t:'SNSにもアップすれば一石二鳥だね',b:5},{t:'写真なんて後で見ないよ',b:-5},{t:'そんな暇あるなら練習しろよ',b:-10}]},
+{q:'「新歓の時期、どうやって魅力を伝えたらいいかな」',c:[{t:'あなたの言葉で伝えれば絶対に響く',b:15},{t:'体験練を充実させて雰囲気を感じてもらおう',b:10},{t:'チラシや動画も効果的だよ',b:5},{t:'来る人は勝手に来るんじゃない',b:-5},{t:'勧誘なんて面倒でしょ',b:-10}]},
+{q:'「チーム内のトラブル対応、いつも難しい」',c:[{t:'トラブルを解決できるのはあなたの人柄のおかげ',b:15},{t:'双方の話をしっかり聞くことが大事',b:10},{t:'代表と連携して対応しよう',b:5},{t:'トラブルなんて放っとけばいいよ',b:-5},{t:'関わりたくないよね',b:-10}]},
+{q:'「卒業するメンバーの送別会、どうしよう」',c:[{t:'あなたの企画する送別会は一生の思い出になる',b:15},{t:'感謝を伝えられる素敵な会にしよう',b:10},{t:'サプライズ要素を入れてみたら',b:5},{t:'送別会なんて簡単でいいよ',b:-5},{t:'やらなくてもいいんじゃない',b:-10}]},
+{q:'「企画班のメンバーをもっと増やしたいんだけど」',c:[{t:'あなたと一緒に企画したいって人は多いはず',b:15},{t:'興味ある人に声をかけてみよう',b:10},{t:'小さな仕事から手伝ってもらおう',b:5},{t:'一人でやった方が早くない',b:-5},{t:'人を巻き込むの面倒でしょ',b:-10}]},
+{q:'「チームの伝統行事、マンネリだけど続けるべき？」',c:[{t:'続けること自体に価値がある。あなたが守ってくれてる',b:15},{t:'少しアレンジを加えて新鮮さを出そう',b:10},{t:'メンバーに聞いてみるのもアリ',b:5},{t:'マンネリなら変えればいいんじゃ',b:-5},{t:'伝統なんてやめていいよ',b:-10}]},
+],conditional:[
+{cond:function(g){var c=g.cr.find(function(r){return r.year===g.yr});return c&&c.rl===5;},q:'「大賞チームの企画班長って、周りから注目されるんだ...」',c:[{t:'注目されるのはあなたの努力の証',b:15},{t:'他チームからも学びたいって言われてるよ',b:10},{t:'プレッシャーを楽しんでいこう',b:5},{t:'注目されるのは疲れるよね',b:-5},{t:'そんなに注目されてないんじゃ',b:-10}]},
+{cond:function(g){var c=g.cr.find(function(r){return r.year===g.yr});return c&&c.rl===0;},q:'「審査落ちで、チームの雰囲気が暗くなっちゃって...」',c:[{t:'こんな時こそあなたの出番だ。みんなを元気づけよう',b:15},{t:'楽しいイベントでチームを盛り上げよう',b:10},{t:'悔しさを共有して絆を深めよう',b:5},{t:'暗い雰囲気は時間が解決するよ',b:-5},{t:'審査落ちは審査落ち。仕方ないよ',b:-10}]},
+{cond:function(g){return g.ld.kikaku.lv>=50;},q:'「企画のレベルが上がるほど、メンバーの期待も大きくなって」',c:[{t:'期待されるのはあなたの実力の証',b:15},{t:'期待を超える企画、一緒に考えよう',b:10},{t:'肩の力を抜いてやってみよう',b:5},{t:'期待に応えるのは大変だね',b:-5},{t:'期待されすぎても困るよね',b:-10}]},
+{cond:function(g){return g.ld.kikaku.lv>=80;},q:'「正直、企画のことは後輩に任せて裏方に回ろうかなって」',c:[{t:'あなたのノウハウはチームの財産。伝承しよう',b:15},{t:'後輩を育てながら一緒にやろう',b:10},{t:'メインは後輩に任せてサポートする形もアリ',b:5},{t:'もう引退ってこと？',b:-5},{t:'好きにすれば',b:-10}]},
+{cond:function(g){return g.s.members>=50;},q:'「50人以上いると、全員が楽しめる企画を考えるのが難しい」',c:[{t:'その配慮がチーム全体の満足度を上げてる',b:15},{t:'グループ別の企画もいいかも',b:10},{t:'アンケートで希望を聞いてみよう',b:5},{t:'全員は無理だから割り切れば',b:-5},{t:'人数多いのは企画のせいじゃないし',b:-10}]},
+{cond:function(g){return g.s.members<=15;},q:'「少人数だから、全員の仲が良くないとキツいんだ」',c:[{t:'少人数の良さを最大限に活かすのがあなたの力',b:15},{t:'家族みたいな雰囲気を作っていこう',b:10},{t:'一人一人と向き合える環境は宝だよ',b:5},{t:'少人数なら自然と仲良くなるでしょ',b:-5},{t:'仲悪い人がいるならどうしようもない',b:-10}]},
+{cond:function(g){return g.yr>=3;},q:'「3年目ともなると、企画もネタ切れ気味で...」',c:[{t:'あなたの創造力ならまだまだ出てくる',b:15},{t:'他チームの企画も参考にしてみよう',b:10},{t:'メンバーからアイデアを募集しよう',b:5},{t:'ネタ切れは仕方ないよ',b:-5},{t:'去年と同じでいいんじゃない',b:-10}]},
+{cond:function(g){return g.yr>=5;},q:'「5年以上企画やってきて...正直もう疲れたかも」',c:[{t:'あなたの5年分の経験はチームの宝',b:15},{t:'後輩と一緒にやれば新鮮さも出るよ',b:10},{t:'ペースを落としてもいい。無理しないで',b:5},{t:'疲れたなら休めばいいのでは',b:-5},{t:'じゃあ辞めてもいいよ',b:-10}]},
+{cond:function(g){return g.s.teamwork>=7000;},q:'「チームワークがここまで高まったのは嬉しいけど...維持できるかな」',c:[{t:'あなたが作り上げたチームワークは本物',b:15},{t:'油断せず、でも自信を持っていこう',b:10},{t:'定期的にチームビルディングを続けよう',b:5},{t:'維持は難しいよね',b:-5},{t:'下がったらまた上げればいい',b:-10}]},
+{cond:function(g){return g.s.teamwork<=3000;},q:'「チームワークが低いのが気になって...企画で何とかしたい」',c:[{t:'あなたの企画力でチームは必ず変わる',b:15},{t:'小さな交流から積み重ねていこう',b:10},{t:'原因を探って対策を立てよう',b:5},{t:'企画だけじゃ変わらないかも',b:-5},{t:'チームワークは各自の問題でしょ',b:-10}]},
+{cond:function(g){var c=g.cr.find(function(r){return r.year===g.yr});return c&&c.rl>=3;},q:'「ファイナルまで行けたのはチームワークのおかげ...来年も維持したい」',c:[{t:'そのチームワークを作ったのはあなたの企画',b:15},{t:'来年もみんなで楽しみながら高めよう',b:10},{t:'成功体験を共有して絆を深めよう',b:5},{t:'維持は大変だけどね',b:-5},{t:'チームワークだけで勝てるわけじゃ',b:-10}]},
+{cond:function(g){var c=g.cr.find(function(r){return r.year===g.yr});return c&&c.rl===4;},q:'「準大賞のチームをまとめてくれたの、みんな感謝してるよ」',c:[{t:'あなたのおかげであの舞台に立てた',b:15},{t:'来年は大賞目指して一緒に頑張ろう',b:10},{t:'チームの絆をさらに深めよう',b:5},{t:'まあみんな頑張ったからね',b:-5},{t:'準大賞は所詮2番目だけどね',b:-10}]},
+]},
+};
+function pickQuestions(key){
+if(!G.usedQs)G.usedQs={};
+if(!G.usedQs[key])G.usedQs[key]=[];
+const pool=QPOOL[key],avail=[...pool.common];
+for(const cq of pool.conditional){if(cq.cond(G))avail.push(cq);}
+const used=G.usedQs[key];
+let unused=avail.filter(function(q){return used.indexOf(q.q)===-1;});
+if(unused.length<3){G.usedQs[key]=[];unused=avail;}
+const sh=shuf(unused).slice(0,3);
+for(const q of sh){if(G.usedQs[key].indexOf(q.q)===-1)G.usedQs[key].push(q.q);}
+return sh;
+}
+const G={tn:'',yr:1,mo:1,wk:2,ph:'training',trc:0,cd:false,lcd:false,
+s:{odori:100,kousei:0,koe:100,tairyoku:100,teamwork:100,yaruki:100,hirou:0,members:10},
+ld:{daihyo:{n:'',lv:1,ex:0,years:1,isNew:false},furi:{n:'',lv:1,ex:0,years:1,isNew:false},sakuhin:{n:'',lv:1,ex:0,years:1,isNew:false},kikaku:{n:'',lv:1,ex:0,years:1,isNew:false}},
+kp:0,cr:[],cs:0,cc:null,lc:null,yed:null,rd:null,cp:0,lvups:[],rv:null,hist:[],usedQs:{},bestKd:null};
+
+function exN(l,isNew){const base=Math.max(1,Math.ceil(l/25));return isNew?Math.max(1,Math.ceil(base*0.7)):base;}
+function addEx(k){const l=G.ld[k];if(l.lv>=100)return;l.ex++;if(l.ex>=exN(l.lv,l.isNew)){l.ex=0;l.lv++;G.lvups.push(`${LN[k]}の${l.n}がLv${l.lv}にアップ!`);}}
+function lm(k){return 1+(G.ld[k].lv-1)*.0202;}
+function dim(v){if(v<2000)return 1;if(v<3000)return .85;if(v<4000)return .7;if(v<5000)return .55;if(v<6000)return .4;if(v<7000)return .3;if(v<8000)return .2;return .1;}
+function addS(k,b){const c=G.s[k]||0;G.s[k]=c+Math.max(1,Math.round(b*dim(c)));}
+function addTW(b){G.s.teamwork=Math.min(10000,G.s.teamwork+Math.max(1,Math.round(b*dim(G.s.teamwork))));}
+function calcK(){const s=G.s;return Math.round((s.odori+s.kousei+s.koe*.5+s.tairyoku*.5)*(1+Math.max(0,s.members-10)*.01));}
+function ym(){const y=G.s.yaruki;if(y>=100)return 1.3;if(y>=90)return 1.2;if(y>=80)return 1.1;if(y>=70)return 1.0;if(y>=50)return 0.8;if(y>=30)return 0.6;return 0.4;}
+function rank(v){if(v>=9000)return'S';if(v>=8000)return'A';if(v>=7000)return'B';if(v>=6000)return'C';if(v>=5000)return'D';if(v>=4000)return'E';if(v>=3000)return'F';return'G';}
+function rv(v){return rank(v)+' '+(v/100).toFixed(2);}
+function tb(){return G.mo>=4&&!G.cd;}
+function meb(){return G.mo>=4&&G.mo<=6;}
+function mebo(){return G.mo>=1&&G.mo<=3;}
+function getEB(){if(!G.cd)return null;return EB[G.mo+'-'+G.wk]||null;}
+function clamp(){const s=G.s;s.odori=Math.min(10000,Math.max(0,s.odori));s.kousei=Math.min(10000,Math.max(0,s.kousei));s.koe=Math.min(10000,Math.max(0,s.koe));s.tairyoku=Math.min(10000,Math.max(0,s.tairyoku));s.teamwork=Math.min(10000,Math.max(0,s.teamwork));s.yaruki=Math.max(0,Math.min(100,s.yaruki));s.hirou=Math.max(0,Math.min(100,s.hirou));s.members=Math.max(1,Math.min(150,s.members));}
+function snap(){return{...G.s};}
+function ddif(b,a){const nm={odori:'踊り',kousei:'構成',koe:'声',tairyoku:'体力',teamwork:'チームワーク',yaruki:'やる気',hirou:'疲労',members:'メンバー'};const ln=[];for(const k of['odori','kousei','koe','tairyoku','teamwork','yaruki','hirou','members']){const d=a[k]-b[k];if(d!==0){let v;if(k==='yaruki'||k==='hirou')v=(d>0?'+':'')+d+'%';else if(k==='members')v=(d>0?'+':'')+d+'人';else v=(d>0?'+':'')+(d/100).toFixed(2);ln.push({l:nm[k],v});}}return ln;}
+function rollEB(ex){const pool=['odori','kousei','koe','tairyoku','teamwork'];const sh=shuf(pool);const cnt=2+(Math.random()<.5?1:0);const picked=sh.slice(0,cnt);const fx={};for(const s of picked){let b=350+Math.floor(Math.random()*301);if(ex)b=Math.round(b*1.5);fx[s]=b;}return fx;}function applyEB(fx){for(const[k,v]of Object.entries(fx)){if(k==='teamwork')addTW(v);else addS(k,v);}}
+
+function getActs(){const e=getEB(),a=[];
+if(e)a.push({id:'enbu',l:e.n,d:e.ex?'遠征 疲労多め 効果大':e.onsen?'演舞+温泉 疲労回復':'演舞イベント',off:false,eb:true});
+a.push(
+{id:'furi',l:'振り練',d:'踊り+++体力++声+',off:false},
+{id:'kousei',l:'構成練',d:'構成+++踊り++',off:false},
+{id:'koe',l:'声出し',d:'声+++',off:false},
+{id:'tai',l:'体力トレ',d:'体力+++',off:false},
+{id:'taiken',l:'体験練',d:'メンバー勧誘',off:tb()||G.s.members>=150},
+{id:'kikaku',l:G.kp>=2?'企画(実行!)':`企画(${G.kp}/3)`,d:G.kp>=2?'企画実行':'準備 疲労-',off:false},
+{id:'yasumi',l:'休み',d:'疲労-- やる気+',off:false});return a;}
+
+function exec(id){
+const s=G.s,y=ym();let title='',isTr=false,ci=true,boost=false;
+G.lvups=[];
+const bf1=snap();
+if(s.yaruki>=90&&['furi','kousei','koe','tai','taiken'].includes(id))boost=true;
+
+switch(id){
+case'furi':{const m=lm('furi')*y;addS('odori',Math.round(300*m));addS('tairyoku',Math.round(200*m));addS('koe',Math.round(100*m));addTW(Math.round(100*y));s.hirou=Math.min(100,s.hirou+5+Math.floor(Math.random()*4));isTr=true;addEx('furi');title='振り練を行った';break;}
+case'kousei':{const m=lm('sakuhin')*y;addS('kousei',Math.round(300*m));addS('odori',Math.round(200*m));addTW(Math.round(100*y));s.hirou=Math.min(100,s.hirou+5+Math.floor(Math.random()*4));isTr=true;addEx('sakuhin');title='構成練を行った';break;}
+case'koe':{const m=lm('sakuhin')*y;addS('koe',Math.round(300*m));addTW(Math.round(100*y));s.hirou=Math.min(100,s.hirou+5+Math.floor(Math.random()*4));isTr=true;ci=false;addEx('sakuhin');title='声出しを行った';break;}
+case'tai':{const m=lm('furi')*y;addS('tairyoku',Math.round(300*m));s.hirou=Math.min(100,s.hirou+5+Math.floor(Math.random()*4));isTr=true;addEx('furi');title='体力トレを行った';break;}
+case'taiken':{addS('odori',Math.round(100*y));addTW(Math.round(100*y));s.hirou=Math.min(100,s.hirou+5);isTr=true;addEx('kikaku');const rc=Math.min(60,s.teamwork/150);if(Math.random()*100<rc){const a=Math.min(3,Math.floor(Math.random()*3)+1);const before=s.members;s.members=Math.min(150,s.members+a);const actual=s.members-before;s.yaruki=Math.min(100,s.yaruki+10);title=`体験練 ${actual}人加入!`;}else title='体験練 加入者なし';break;}
+case'kikaku':{G.kp++;s.hirou=Math.max(0,s.hirou-10);ci=false;addEx('daihyo');addEx('kikaku');if(G.kp>=3){G.kp=0;const ts=['g','b','u'],p=ts[Math.floor(Math.random()*3)];const dm=lm('daihyo'),km=lm('kikaku');s.yaruki=Math.min(100,s.yaruki+Math.round(25*dm));addTW(Math.round(800*km));
+if(p==='g'){addS('odori',Math.round(1000*lm('furi')));addS('kousei',Math.round(1000*lm('sakuhin')));addS('koe',Math.round(900*lm('sakuhin')));addS('tairyoku',Math.round(500*lm('furi')));title='合宿を実施!';}
+else if(p==='b'){s.hirou=0;addS('tairyoku',Math.round(500*lm('furi')));addS('odori',Math.round(200*lm('furi')));addTW(Math.round(300*lm('kikaku')));title='BBQを実施!';}
+else{addS('tairyoku',Math.round(900*lm('furi')));addS('koe',Math.round(500*lm('sakuhin')));addS('odori',Math.round(300*lm('furi')));s.hirou=Math.min(100,s.hirou+12);title='運動会を実施!';}}else title=`企画準備 (${G.kp}/3)`;break;}
+case'yasumi':{const rr=Math.random();let hr=20,ht='休みを取った';if(rr<0.1){hr=10;ht='あまり寝付けなかった...';}else if(rr>0.9){hr=40;ht='ぐっすり眠れた!';}s.hirou=Math.max(0,s.hirou-hr);s.yaruki=Math.min(100,s.yaruki+10+Math.floor(Math.random()*6));s.teamwork=Math.max(0,s.teamwork-50);ci=false;addEx('daihyo');title=ht;break;}
+case'enbu':{const e=getEB();if(e){const fx=rollEB(e.ex);applyEB(fx);s.hirou=Math.min(100,s.hirou+e.ft);if(e.onsen)s.hirou=Math.max(0,s.hirou-e.ft*2);G.cp+=e.cp;const ykLoss=1+Math.floor(Math.random()*5);s.yaruki=Math.max(0,s.yaruki-ykLoss);let mj=false;if(Math.random()<.25){const a=Math.min(3,Math.floor(Math.random()*3)+1);s.members=Math.min(150,s.members+a);s.yaruki=Math.min(100,s.yaruki+10);mj=true;}title=mj?`${e.n} メンバー加入!`:`${e.n}に参加`;}break;}
+}
+if(isTr)s.yaruki=Math.max(0,s.yaruki-(5+Math.floor(Math.random()*4)));
+clamp();const bf2=snap();
+const inj=ci?chkInj():false;clamp();const bf3=snap();
+const evt=id==='enbu'?null:chkEvt();clamp();const bf4=snap();
+G.rd={wk:`${G.yr}年目 ${G.mo}月${G.wk}週`,title,boost,
+ad:ddif(bf1,bf2),inj,id:ddif(bf2,bf3),evt,ed:ddif(bf3,bf4),lvups:[...G.lvups]};
+G.ph='result';render();}
+
+function chkInj(){const h=G.s.hirou;let c=h<=30?2:h<=60?10:h<=80?25:50;
+if(Math.random()*100<c){G.s.odori=Math.max(0,G.s.odori-200);G.s.kousei=Math.max(0,G.s.kousei-200);G.s.yaruki=Math.max(0,G.s.yaruki-20);return true;}return false;}
+
+function chkEvt(){
+if(Math.random()>.3)return null;
+const bc=!G.cd,mb=meb(),mbo=mebo();
+const me=[
+{t:'メンバーが友達を連れてきた',f:()=>{const a=Math.min(3,Math.floor(Math.random()*2)+1);G.s.members=Math.min(150,G.s.members+a);G.s.yaruki=Math.min(100,G.s.yaruki+10);}},
+{t:'SNSでチームが話題に',f:()=>{addTW(100);G.s.members=Math.min(150,G.s.members+1);G.s.yaruki=Math.min(100,G.s.yaruki+10);}},
+];
+const ne=[
+{t:'他チームの演舞を見て刺激を受けた',f:()=>{G.s.yaruki=Math.min(100,G.s.yaruki+20);}},
+{t:'OB・OGが練習に来てくれた',f:()=>{G.s.yaruki=Math.min(100,G.s.yaruki+10);}},
+{t:'メンバー同士でケンカが起きた',f:()=>{G.s.teamwork=Math.max(0,G.s.teamwork-300);G.s.yaruki=Math.max(0,G.s.yaruki-10);}},
+{t:'振付師の先生にしごかれた!',f:()=>{addS('odori',800);addS('kousei',800);},w:3},
+];
+if(!bc){
+ne.push({t:'メンバーが辞めたいと言い出した',f:()=>{const l=Math.min(3,Math.floor(Math.random()*2)+1);G.s.members=Math.max(1,G.s.members-l);G.s.yaruki=Math.max(0,G.s.yaruki-10);}});
+const rv2=RV[Math.floor(Math.random()*RV.length)];
+ne.push({t:rv2+'との合同練習を行った',f:()=>{const pool=['odori','kousei','koe','tairyoku'];addS(pool[Math.floor(Math.random()*4)],300);addTW(200);}});}
+let pool=[];for(const e of ne){const w=e.w||10;for(let i=0;i<w;i++)pool.push(e);}
+if(!mb){const mw=mbo?30:10;for(const e of me)for(let i=0;i<mw;i++)pool.push(e);}
+const ev=pool[Math.floor(Math.random()*pool.length)];ev.f();return ev.t;}
+
+function advWk(){G.wk++;if(G.wk>4){G.wk=1;G.mo++;}
+if(G.mo===5&&G.wk===1&&!G.cd){G.ph='gw';execGWcamp();return;}
+if(G.mo===6&&G.wk===2&&!G.cd){G.ph='contest';prepC();}
+else if(G.mo===8&&G.wk===1&&G.cd&&!G.lcd){G.ph='leader_change';prepLC();}
+else if(G.mo===12&&G.wk===4){G.ph='year_end';prepYE();}}
+function execGWcamp(){
+const s=G.s,y=ym();G.lvups=[];const bf1=snap();
+const fm=lm('furi'),sm=lm('sakuhin'),km=lm('kikaku'),dm=lm('daihyo');
+addS('odori',Math.round(600*fm*y));
+addS('kousei',Math.round(600*sm*y));
+addS('koe',Math.round(400*sm*y));
+addS('tairyoku',Math.round(400*fm*y));
+addTW(Math.round(600*km*y));
+s.yaruki=Math.min(100,s.yaruki+Math.round(15*dm));
+s.hirou=Math.min(100,s.hirou+12);
+addEx('furi');addEx('sakuhin');addEx('kikaku');addEx('daihyo');
+clamp();const bf2=snap();
+const dif=ddif(bf1,bf2);
+let h=`<div class="df-text">${G.yr}年目 5月1週</div>`;
+h+=`<div class="df-text">ゴールデンウィークに強化合宿を行いました!<br>みんなで集中的に練習し、大きく成長しました</div>`;
+for(const l of dif)h+=`<div class="rd-line" style="max-width:280px;margin:0 auto;"><span class="rd-lbl">${l.l}</span><span class="rd-val">${l.v}</span></div>`;
+if(G.lvups.length>0)for(const m of G.lvups)h+=`<div class="rd-note" style="text-align:center;margin-top:4px;">${m}</div>`;
+document.getElementById('gw-content').innerHTML=h;
+render();
+}
+function execAnniversary(){
+document.getElementById('an-title').textContent=`${G.yr}周年 おめでとう！`;
+const before={yaruki:G.s.yaruki};
+G.s.yaruki=100;
+G.lvups=[];
+for(const k of['daihyo','furi','sakuhin','kikaku']){G.ld[k].lv=Math.min(100,G.ld[k].lv+5);G.lvups.push(`${LN[k]}の${G.ld[k].n}がLv${G.ld[k].lv}に!`);}
+let h=`<div class="contest-text">${G.yr}年間チームを続けてきた！<br>その歩みが表彰されました</div>`;
+h+=`<div class="contest-highlight">🎉 ${G.yr}周年表彰 🎉</div>`;
+h+=`<div class="contest-text">やる気が100%に回復！<br>全班長レベルが5アップ！</div>`;
+if(before.yaruki<100)h+=`<div class="rd-line" style="max-width:280px;margin:4px auto;"><span class="rd-lbl">やる気</span><span class="rd-val">+${100-before.yaruki}%</span></div>`;
+for(const m of G.lvups)h+=`<div class="rd-note" style="text-align:center;margin-top:4px;">${m}</div>`;
+document.getElementById('an-content').innerHTML=h;
+}
+function advFromResult(){advWk();if(G.ph==='result')G.ph='training';saveGame();render();}
+
+function prepC(){
+let base=300;if(G.cr.length>0)base=G.cr[G.cr.length-1].teams;
+const v=Math.round(base*.03),teams=base+Math.floor(Math.random()*(v*2+1))-v;
+const kd=calcK(),cb=G.cp||0,adj=kd*(300/teams)*(1+cb*.02);
+const lastKd=G.cr.length>0?G.cr[G.cr.length-1].kd:null;
+const rr=Math.random();let rc=rr<.6?2:rr<.85?3:4;
+const sh=shuf(RV),blk=sh.slice(0,rc),pool=sh.slice(rc);
+let sieve=0;if(adj>=TH.f)sieve=3;else if(adj>=TH.s)sieve=2;else if(adj>=TH.i)sieve=1;
+let blocked=false;if(sieve>=1){if(Math.random()*100<rc*12){blocked=true;sieve=Math.max(0,sieve-1);}}
+let fi=[],se=[],ic=[];
+function rivalPlace(kd){
+var tb=[
+{kd:9000,f:85,s:12,i:3},
+{kd:8000,f:65,s:25,i:8},
+{kd:7000,f:35,s:40,i:20},
+{kd:6000,f:10,s:35,i:40},
+{kd:5000,f:2,s:15,i:45},
+{kd:4000,f:0,s:3,i:30},
+{kd:3000,f:0,s:0,i:15}
+];
+var lo=tb[tb.length-1],hi=tb[0];
+for(var j=0;j<tb.length-1;j++){if(kd>=tb[j+1].kd&&kd<=tb[j].kd){hi=tb[j];lo=tb[j+1];break;}}
+if(kd>=9000){lo=hi=tb[0];}
+if(kd<=3000){lo=hi=tb[tb.length-1];}
+var range=hi.kd-lo.kd;var t=range===0?1:(kd-lo.kd)/range;
+var pf=lo.f+(hi.f-lo.f)*t;
+var ps=lo.s+(hi.s-lo.s)*t;
+var pi=lo.i+(hi.i-lo.i)*t;
+var pd=100-pf-ps-pi;if(pd<0)pd=0;
+var r=Math.random()*100;
+if(r<pf)return'fi';
+if(r<pf+ps)return'se';
+if(r<pf+ps+pi)return'ic';
+return'out';
+}
+const blkSorted=[...blk].sort(function(a,b){
+const ka=G.rv&&G.rv[a]?G.rv[a].kd:5000;
+const kb=G.rv&&G.rv[b]?G.rv[b].kd:5000;
+return kb-ka;
+});
+let blkFi=false,blkSe=false,blkIc=false;
+for(const t of blkSorted){
+const rkd=G.rv&&G.rv[t]?G.rv[t].kd:5000;
+let place=rivalPlace(rkd);
+if(place==='fi'&&blkFi)place='se';
+if(place==='se'&&blkSe)place='ic';
+if(place==='ic'&&blkIc)place='out';
+if(place==='fi'){fi.push(t);blkFi=true;}
+else if(place==='se'){se.push(t);blkSe=true;}
+else if(place==='ic'){ic.push(t);blkIc=true;}
+}
+const inF=sieve>=3,inS=sieve===2,inI=sieve===1;
+let pi=0;
+const fiNeed=Math.max(0,10-fi.length-(inF?1:0));
+const seNeed=Math.max(0,10-se.length-(inS?1:0));
+const icNeed=Math.max(0,10-ic.length-(inI?1:0));
+for(let i=0;i<fiNeed;i++)fi.push(pool[pi++]);
+if(inF)fi.push(G.tn);
+for(let i=0;i<seNeed;i++)se.push(pool[pi++]);
+if(inS)se.push(G.tn);
+for(let i=0;i<icNeed;i++)ic.push(pool[pi++]);
+if(inI)ic.push(G.tn);
+let sA,pA=false;if(inS&&Math.random()<.1){sA=G.tn;pA=true;}
+else{const sn=se.filter(t=>t!==G.tn);sA=sn[Math.floor(Math.random()*sn.length)];}
+const fF=[...fi,sA],pIF=inF||pA;
+let fr='final';if(pIF&&inF){if(adj>=TH.t)fr='taisho';else if(adj>=TH.j)fr='jun';}
+let rt='',rl=0;
+if(sieve===0){rt='審査落ち';rl=0;}else if(sieve===1){rt='一次審査員賞';rl=1;}
+else if(sieve===2&&!pA){rt='セミファイナル進出';rl=2;}
+else if(pA){rt='ファイナル進出(セミから)';rl=3;fr='final';}
+else{if(fr==='taisho'){rt='大賞';rl=5;}else if(fr==='jun'){rt='準大賞';rl=4;}else{rt='ファイナル進出';rl=3;}}
+const npf=fF.filter(t=>t!==G.tn);let tT,jT;
+if(rl===5){tT=G.tn;jT=[npf[0],npf[1]];}else if(rl===4){tT=npf[0];jT=[G.tn,npf[1]];}else{tT=npf[0];jT=[npf[1],npf[2]];}
+G.cc={teams,kd,lastKd,adj:Math.round(adj),cb,rt,rl,sieve,pA,fr,blk,fi,se,ic,sA,fF,tT,jT,pIF,blocked,rc,
+stages:bCS(teams,kd,lastKd,sieve,pA,fr,blk,fi,se,ic,sA,tT,jT,pIF,rl,blocked,rc)};G.cs=0;}
+
+function bCS(teams,kd,lastKd,sieve,pA,fr,blk,fi,se,ic,sA,tT,jT,pIF,rl,blocked,rc){
+const st=[],tl=(l,a)=>`<div style="margin:4px 0"><strong>${l}:</strong><br>${a.map(t=>t===G.tn?'<strong>['+t+']</strong>':t).join(', ')}</div>`;
+const lS=lastKd!==null?`<div class="contest-text">昨年の感動力: ${lastKd}</div>`:'';
+const bS=blk.map(t=>`<strong>${t}</strong>`).join(' と ');
+st.push({h:`<div class="contest-text">参加チーム数</div><div class="contest-highlight">${teams} チーム</div><div class="contest-text">同じブロックに強豪${rc}チーム<br>${bS}<br>がいる</div>`});
+st.push({h:`<div class="contest-text">あなたのチームの感動力</div><div class="contest-highlight">${kd}</div>${lS}<div class="contest-text">審査が始まる...</div>`});
+let rM='';
+if(sieve===0)rM=`<div class="contest-result-big">残念... 審査落ち</div>${blocked?'<div class="contest-text">強豪チームに阻まれた...</div>':''}`;
+else if(sieve===1)rM=`<div class="contest-result-big">一次審査員賞 受賞!</div>${blocked?'<div class="contest-text">強豪に阻まれ上位進出ならず...</div>':''}`;
+else if(sieve===2)rM='<div class="contest-result-big">セミファイナル進出!</div>';
+else rM='<div class="contest-result-big">ファイナル進出!</div>';
+st.push({h:`${rM}<div class="contest-teams">${tl('ファイナル',fi)}${tl('セミファイナル',se)}${tl('一次審査員賞',ic)}</div>`});
+st.push({h:`<div class="contest-text">セミファイナルから進出したのは...</div><div class="contest-result-big">${sA}</div>${sA===G.tn?'<div class="contest-text">奇跡の勝ち上がり!</div>':''}`});
+if(pIF){if(fr==='taisho')st.push({h:'<div class="contest-text">ファイナルの結果...</div><div class="contest-result-big">大賞!!!</div><div class="contest-text">おめでとう!</div>'});
+else if(fr==='jun')st.push({h:'<div class="contest-text">ファイナルの結果...</div><div class="contest-result-big">準大賞!!</div><div class="contest-text">あと一歩で大賞だった!</div>'});
+else st.push({h:'<div class="contest-text">ファイナルの結果...</div><div class="contest-result-big">大賞は逃しました...</div><div class="contest-text">しかしファイナルの舞台に立った!</div>'});}
+if(!(pIF&&fr==='taisho'))st.push({h:`<div class="contest-text">今年の大賞は</div><div class="contest-result-big">${tT}</div><div class="contest-text">準大賞は<br><strong>${jT[0]}</strong> と <strong>${jT[1]}</strong></div>`});
+else st.push({h:`<div class="contest-text">準大賞は</div><div class="contest-result-big">${jT[0]}<br>${jT[1]}</div>`});
+return st;}
+
+function advC(){G.cs++;const c=G.cc;if(G.cs>=c.stages.length){G.cr.push({year:G.yr,result:c.rt,teams:c.teams,kd:c.kd,rl:c.rl});if(!G.hist)G.hist=[];G.hist.push({year:G.yr,kd:c.kd,members:G.s.members});
+if(!G.bestKd||c.kd>G.bestKd.kd){G.bestKd={kd:c.kd,year:G.yr,mo:G.mo,wk:G.wk,s:{odori:G.s.odori,kousei:G.s.kousei,koe:G.s.koe,tairyoku:G.s.tairyoku,teamwork:G.s.teamwork,members:G.s.members},ld:{daihyo:{n:G.ld.daihyo.n,lv:G.ld.daihyo.lv},furi:{n:G.ld.furi.n,lv:G.ld.furi.lv},sakuhin:{n:G.ld.sakuhin.n,lv:G.ld.sakuhin.lv},kikaku:{n:G.ld.kikaku.n,lv:G.ld.kikaku.lv}}};}
+G.cd=true;G.lcd=false;G.cp=0;G.mo=6;G.wk=3;if(G.yr%10===0){G.ph='anniversary';execAnniversary();}else{G.ph='training';}saveGame();}render();}
+
+function prepLC(){const cr=G.cr.find(r=>r.year===G.yr);let baseBp=30;if(cr){const pm={0:30,1:50,2:60,3:70,4:80,5:90};baseBp=pm[cr.rl]||30;}
+function calcBp(k){const y=G.ld[k].years||1;let p=baseBp;if(y>=5)p=Math.max(5,p-(y-4)*15);return p;}
+const bps={daihyo:calcBp('daihyo'),furi:calcBp('furi'),sakuhin:calcBp('sakuhin'),kikaku:calcBp('kikaku')};
+G.lc={keys:['daihyo','furi','sakuhin','kikaku'],ci:0,rd:0,prob:bps['daihyo'],bp:baseBp,bps,ph:'intro',res:{},qs:{}};}
+function renderLC(){const lc=G.lc,con=document.getElementById('lc-content');
+if(!lc){con.innerHTML='<div class="dialogue-text">データエラー</div><button class="btn" data-lc="err">ホームに戻る</button>';return;}
+if(lc.ph==='done'){let h='<div class="dialogue-text" style="text-align:center">全員との話し合いが終わった</div>';for(const k of lc.keys){const r=lc.res[k],l=G.ld[k];h+=`<div class="sg-row"><span class="sg-label">${QPOOL[k].l}: ${l.n}</span><span class="sg-value">${r==='stay'?'継続':'交代'}</span></div>`;}h+='<button class="btn" data-lc="fin">大会後の活動へ</button>';con.innerHTML=h;return;}
+const k=lc.keys[lc.ci],l=G.ld[k],d=QPOOL[k];document.getElementById('lc-title').textContent=`${d.l}との話し合い`;
+if(lc.ph==='intro'){const yr=G.ld[k].years||1;const ageMsg=yr>=5?`<div class="dialogue-text" style="color:#888">「もう${yr}年やってきたけど...そろそろ年齢的にも引き際かなって思ってて」</div>`:'';con.innerHTML=`<div class="dialogue-text"><strong>${l.n}</strong> (${d.l} / Lv${l.lv} / ${yr}年目) と来年について話し合う</div>${ageMsg}<div class="prob-display">継続確率: ${lc.prob}%</div><button class="btn-small" data-lc="startP">説得する</button><button class="btn-small btn-secondary" data-lc="confRep">交代させる</button><div style="font-size:10px;color:#999;margin-top:6px">※交代しても能力は同じ。レベルは半分に</div>`;}
+else if(lc.ph==='persuade'){const rd=lc.qs[k][lc.rd];let h=`<div class="dialogue-text">${rd.q}</div><div class="prob-display">継続確率: ${lc.prob}% (${lc.rd+1}/3)</div>`;for(let i=0;i<rd.c.length;i++)h+=`<button class="choice-btn" data-lc="sel" data-idx="${i}">${rd.c[i].t}</button>`;con.innerHTML=h;}
+else if(lc.ph==='result'){const roll=Math.random()*100,ok=roll<lc.prob;
+if(ok){lc.res[k]='stay';con.innerHTML=`<div class="dialogue-text" style="text-align:center"><strong>${l.n}</strong>「...わかった。来年も頑張るよ」</div><div class="contest-result-big">継続決定</div><button class="btn" data-lc="nextL">次の班長へ</button>`;}
+else{lc.res[k]='leave';con.innerHTML=`<div class="dialogue-text" style="text-align:center"><strong>${l.n}</strong>「ごめん...来年は別のことに挑戦したいんだ」</div><div class="contest-result-big">交代...</div><div class="input-group" style="margin-top:12px"><label>新しい${d.l}の名前</label><input type="text" id="new-ln" placeholder="名前を入力"></div><button class="btn" data-lc="applyNL" data-key="${k}">決定</button>`;}}
+else if(lc.ph==='rep_conf'){con.innerHTML=`<div class="dialogue-text" style="text-align:center">本当に<strong>${l.n}</strong>を交代させますか?<br>レベルが半分になります</div><button class="btn-small" data-lc="doRep" data-key="${k}">交代させる</button><button class="btn-small btn-secondary" data-lc="canRep">やめる</button>`;}
+else if(lc.ph==='rep_name'){con.innerHTML=`<div class="dialogue-text" style="text-align:center">${d.l}を交代します</div><div class="input-group"><label>新しい${d.l}の名前</label><input type="text" id="new-ln" placeholder="名前を入力"></div><button class="btn" data-lc="applyNL" data-key="${k}">決定</button>`;}}
+function startP(){const lc=G.lc,k=lc.keys[lc.ci];const picked=pickQuestions(k);lc.qs[k]=picked.map(function(q){const sc=shuf([...q.c]).slice(0,3);return{q:q.q,c:sc};});lc.rd=0;lc.ph='persuade';render();}
+function selP(i){const lc=G.lc,k=lc.keys[lc.ci];lc.prob=Math.max(0,Math.min(100,lc.prob+lc.qs[k][lc.rd].c[i].b));lc.rd++;if(lc.rd>=3)lc.ph='result';render();}
+function confRep(){G.lc.ph='rep_conf';render();}
+function canRep(){G.lc.ph='intro';render();}
+function doRep(k){G.lc.res[k]='leave';G.lc.ph='rep_name';render();}
+function applyNL(k){const n=document.getElementById('new-ln');const nm=n?n.value.trim():'';if(!nm){alert('名前を入力してください');return;}G.ld[k].n=nm;G.ld[k].lv=Math.ceil(G.ld[k].lv/2);G.ld[k].ex=0;G.ld[k].years=1;G.ld[k].isNew=true;nextL();}
+function nextL(){const lc=G.lc;lc.ci++;if(lc.ci>=lc.keys.length)lc.ph='done';else{lc.ph='intro';const nk=lc.keys[lc.ci];lc.prob=lc.bps[nk];lc.rd=0;}render();}
+function finLC(){G.lcd=true;G.ph='training';saveGame();render();}
+
+function prepYE(){const rate=(Math.random()*4+1)/100;const rc=Math.max(0,Math.round(G.s.members*rate));G.s.members=Math.max(1,G.s.members-rc);G.yed={rc};}
+function renderYE(){document.getElementById('ye-title').textContent=`${G.yr}年目 お疲れ様でした`;const cr=G.cr.find(r=>r.year===G.yr),rt=cr?cr.result:'---',d=G.yed;
+document.getElementById('ye-content').innerHTML=`<div class="yearend-text">年末年始のお休みです<br><br>今年度の大会結果: <strong>${rt}</strong><br><br>${d.rc>0?`年度の切り替わりで ${d.rc}人 がチームを離れました<br>現在: ${G.s.members}人<br><br>`:'年度の切り替わりで辞めた人はいませんでした<br><br>'}疲労も回復し、やる気も充電完了<br>来年も頑張ろう</div>`;}
+
+function goDF(){
+G.yr++;yearlyRivalChange();const s=G.s;
+for(const k of['daihyo','furi','sakuhin','kikaku']){if(!G.ld[k].isNew)G.ld[k].years=(G.ld[k].years||1)+1;G.ld[k].isNew=false;}
+const bfAll=snap();
+s.odori=Math.max(0,Math.round(s.odori*.5));s.kousei=Math.max(0,Math.round(s.kousei*.5));
+s.koe=Math.max(0,Math.round(s.koe*.8));s.tairyoku=Math.max(0,Math.round(s.tairyoku*.8));
+s.yaruki=100;s.hirou=0;
+clamp();const afDecay=snap();const decayDif=ddif(bfAll,afDecay);
+let dh=`<div class="df-text">新年度の作品練習が始まりました<br>年末年始をだらだら過ごしていたため<br>踊り・構成がかなり下がりました<br>声・体力が下がりました</div>`;
+for(const l of decayDif)dh+=`<div class="rd-line" style="max-width:280px;margin:0 auto;"><span class="rd-lbl">${l.l}</span><span class="rd-val">${l.v}</span></div>`;
+document.getElementById('decay-content').innerHTML=dh;
+G._decaySnap=snap();G.mo=1;G.wk=2;G.cd=false;G.lcd=false;G.trc=0;G.ph='decay';render();}
+function goDFfes(){
+const s=G.s;const bfFes=snap();
+const fx=rollEB(false);applyEB(fx);G.cp=(G.cp||0)+1;
+const ykLoss=1+Math.floor(Math.random()*5);s.yaruki=Math.max(0,s.yaruki-ykLoss);
+let mj=false;if(Math.random()<.2){const a=Math.min(3,Math.floor(Math.random()*3)+1);s.members=Math.min(150,s.members+a);s.yaruki=Math.min(100,s.yaruki+10);mj=true;}
+clamp();const afFes=snap();const fesDif=ddif(bfFes,afFes);
+let h=`<div class="df-text">年始にド派手フェスティバルに参加しました!</div>`;
+if(mj)h+=`<div class="df-text">メンバーが加入!</div>`;
+for(const l of fesDif)h+=`<div class="rd-line" style="max-width:280px;margin:0 auto;"><span class="rd-lbl">${l.l}</span><span class="rd-val">${l.v}</span></div>`;
+document.getElementById('df-content').innerHTML=h;
+G.ph='df';render();}
+
+function startNYFromDF(){G.ph='training';showMsg('');saveGame();render();}
+
+function showScr(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+function render(){switch(G.ph){
+case'training':showScr('home-screen');updHome();break;
+case'result':showScr('result-screen');renderRD();break;
+case'contest':showScr('contest-screen');updC();break;
+case'leader_change':showScr('lc-screen');renderLC();break;
+case'year_end':showScr('ye-screen');renderYE();break;
+case'gw':showScr('gw-screen');break;
+case'decay':showScr('decay-screen');break;
+case'df':showScr('df-screen');break;
+case'anniversary':showScr('anniversary-screen');break;}}
+
+function renderRD(){const r=G.rd;document.getElementById('rd-wk').textContent=r.wk;
+let h='<div class="rd-section"><div class="rd-title">'+r.title+'</div>';
+if(r.boost)h+='<div class="rd-note">やる気十分! 練習効率UP!</div>';
+for(const l of r.ad)h+=`<div class="rd-line"><span class="rd-lbl">${l.l}</span><span class="rd-val">${l.v}</span></div>`;
+if(r.lvups.length>0)for(const m of r.lvups)h+=`<div class="rd-note">${m}</div>`;
+h+='</div>';
+if(r.inj){h+='<div class="rd-section"><div class="rd-title">ケガ人が出た!</div>';for(const l of r.id)h+=`<div class="rd-line"><span class="rd-lbl">${l.l}</span><span class="rd-val">${l.v}</span></div>`;h+='</div>';}
+if(r.evt){h+='<div class="rd-section"><div class="rd-title">'+r.evt+'</div>';for(const l of r.ed)h+=`<div class="rd-line"><span class="rd-lbl">${l.l}</span><span class="rd-val">${l.v}</span></div>`;h+='</div>';}
+document.getElementById('rd-content').innerHTML=h;}
+
+function updC(){document.getElementById('ct-title').textContent=`第${G.yr}回 よさこい大会`;document.getElementById('ct-content').innerHTML=G.cc.stages[G.cs].h;document.getElementById('ct-next').textContent=G.cs>=G.cc.stages.length-1?'大会後の活動へ':'次へ';}
+
+function updHome(){
+document.getElementById('d-tn').textContent=G.tn;
+document.getElementById('d-wk').textContent=`${G.yr}年目 ${G.mo}月${G.wk}週`;
+const na=document.getElementById('notice-area');let nt='';
+if(G.mo>=1&&G.mo<=3&&!G.cd)nt+='<div class="notice-box">メンバー募集(体験練)は3月末まで</div>';na.innerHTML=nt;
+const s=G.s;
+document.getElementById('s-kd').textContent=calcK();
+document.getElementById('s-od').textContent=rv(s.odori);
+document.getElementById('s-ko').textContent=rv(s.kousei);
+document.getElementById('s-koe').textContent=rv(s.koe);
+document.getElementById('s-ta').textContent=rv(s.tairyoku);
+document.getElementById('s-tw').textContent=rv(s.teamwork);
+const ykEl=document.getElementById('s-yk');ykEl.textContent=s.yaruki+'%';
+if(s.yaruki>=100)ykEl.style.color='#d63384';
+else if(s.yaruki>=90)ykEl.style.color='#dc3545';
+else if(s.yaruki>=80)ykEl.style.color='#e67e22';
+else if(s.yaruki>=70)ykEl.style.color='#b8860b';
+else if(s.yaruki>=50)ykEl.style.color='#28a745';
+else if(s.yaruki>=30)ykEl.style.color='#2196f3';
+else ykEl.style.color='#0d47a1';
+const hrEl=document.getElementById('s-hr');hrEl.textContent=s.hirou+'%';
+if(s.hirou<=30)hrEl.style.color='#222';
+else if(s.hirou<=60)hrEl.style.color='#b8860b';
+else if(s.hirou<=80)hrEl.style.color='#e67e22';
+else hrEl.style.color='#dc3545';
+document.getElementById('s-mem').textContent=s.members+'人';
+const lm2={daihyo:'d',furi:'f',sakuhin:'s',kikaku:'k'};
+for(const[k,v]of Object.entries(lm2)){document.getElementById(`ln-${v}`).textContent=G.ld[k].n;document.getElementById(`ll-${v}`).textContent=G.ld[k].lv;}
+const rc=document.getElementById('cr-list');let rh='';const sorted=[...G.cr].reverse();
+for(const r of sorted){const ic=r.year===G.yr;rh+=`<div class="result-row"><span class="result-label">${ic?'今年度':r.year+'年目'}</span><span class="result-value">${r.result} 感動力:${r.kd} (${r.teams}チーム)</span></div>`;}
+if(!G.cr.some(r=>r.year===G.yr))rh=`<div class="result-row"><span class="result-label">今年度(${G.yr}年目)</span><span class="result-value">-</span></div>`+rh;
+if(!rh)rh=`<div class="result-row"><span class="result-label">今年度(${G.yr}年目)</span><span class="result-value">-</span></div>`;rc.innerHTML=rh;
+const con=document.getElementById('act-c');con.innerHTML='';
+for(const a of getActs()){const b=document.createElement('button');b.className=a.eb?'action-btn enbu-btn':'action-btn';b.disabled=a.off;b.innerHTML=`${a.l}<div class="action-desc">${a.d}</div>`;b.addEventListener('click',()=>exec(a.id));con.appendChild(b);}}
+function showMsg(t){const b=document.getElementById('message-box');if(t){b.innerHTML=t;b.classList.add('show');}else{b.classList.remove('show');}}
+function renderBest(){
+const b=G.bestKd;if(!b)return;
+let h=`<div style="font-weight:bold;margin-bottom:4px;">🏆 最高感動力: ${b.kd}（${b.year}年目 ${b.mo}月${b.wk}週）</div>`;
+h+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:2px 12px;margin-bottom:4px;">`;
+h+=`<div style="display:flex;justify-content:space-between;"><span style="color:#666;">踊り</span><span style="font-weight:bold;">${(b.s.odori/100).toFixed(2)}</span></div>`;
+h+=`<div style="display:flex;justify-content:space-between;"><span style="color:#666;">構成</span><span style="font-weight:bold;">${(b.s.kousei/100).toFixed(2)}</span></div>`;
+h+=`<div style="display:flex;justify-content:space-between;"><span style="color:#666;">声</span><span style="font-weight:bold;">${(b.s.koe/100).toFixed(2)}</span></div>`;
+h+=`<div style="display:flex;justify-content:space-between;"><span style="color:#666;">体力</span><span style="font-weight:bold;">${(b.s.tairyoku/100).toFixed(2)}</span></div>`;
+h+=`<div style="display:flex;justify-content:space-between;"><span style="color:#666;">チームワーク</span><span style="font-weight:bold;">${(b.s.teamwork/100).toFixed(2)}</span></div>`;
+h+=`<div style="display:flex;justify-content:space-between;"><span style="color:#666;">メンバー</span><span style="font-weight:bold;">${b.s.members}人</span></div>`;
+h+=`</div>`;
+h+=`<div style="border-top:1px solid #ccc;padding-top:4px;display:grid;grid-template-columns:1fr 1fr;gap:2px 12px;">`;
+h+=`<div style="display:flex;justify-content:space-between;"><span style="color:#666;">代表 ${b.ld.daihyo.n}</span><span style="font-weight:bold;">Lv${b.ld.daihyo.lv}</span></div>`;
+h+=`<div style="display:flex;justify-content:space-between;"><span style="color:#666;">振り ${b.ld.furi.n}</span><span style="font-weight:bold;">Lv${b.ld.furi.lv}</span></div>`;
+h+=`<div style="display:flex;justify-content:space-between;"><span style="color:#666;">作品 ${b.ld.sakuhin.n}</span><span style="font-weight:bold;">Lv${b.ld.sakuhin.lv}</span></div>`;
+h+=`<div style="display:flex;justify-content:space-between;"><span style="color:#666;">企画 ${b.ld.kikaku.n}</span><span style="font-weight:bold;">Lv${b.ld.kikaku.lv}</span></div>`;
+h+=`</div>`;
+document.getElementById('best-content').innerHTML=h;
+const btn=document.getElementById('best-toggle-btn');
+if(btn)btn.style.display='block';
+}
+
+document.getElementById('start-btn').addEventListener('click',()=>{const tn=document.getElementById('team-name').value.trim();const ns={daihyo:document.getElementById('leader-daihyo').value.trim(),furi:document.getElementById('leader-furi').value.trim(),sakuhin:document.getElementById('leader-sakuhin').value.trim(),kikaku:document.getElementById('leader-kikaku').value.trim()};if(!tn||!ns.daihyo||!ns.furi||!ns.sakuhin||!ns.kikaku){alert('すべての名前を入力してください');return;}G.tn=tn;for(const k of Object.keys(ns))G.ld[k].n=ns[k];G.lcd=false;G.rv=initRivals();gameStarted=true;showMsg('');saveGame();render();});
+document.getElementById('continue-btn').addEventListener('click',()=>{const d=loadGame();if(!d){alert('セーブデータが見つかりません');return;}restoreGame(d);gameStarted=true;if(G.ph==='result'||G.ph==='contest'||G.ph==='leader_change'||G.ph==='year_end'||G.ph==='df')G.ph='training';showMsg('');render();});
+document.getElementById('delete-btn').addEventListener('click',()=>{if(confirm('セーブデータを削除しますか？')){deleteSave();document.getElementById('continue-btn').style.display='none';document.getElementById('delete-btn').style.display='none';alert('削除しました');}});
+document.getElementById('save-confirm-btn').addEventListener('click',()=>{saveGame();alert('セーブしました');});
+document.getElementById('reset-confirm-btn').addEventListener('click',()=>{if(confirm('セーブデータを削除してタイトルに戻りますか？')){deleteSave();gameStarted=false;G.ph='training';G.yr=1;G.mo=1;G.wk=2;G.cd=false;G.lcd=false;G.trc=0;G.kp=0;G.cr=[];G.cs=0;G.cp=0;G.s={odori:100,kousei:0,koe:100,tairyoku:100,teamwork:100,yaruki:100,hirou:0,members:10};G.ld={daihyo:{n:'',lv:1,ex:0},furi:{n:'',lv:1,ex:0},sakuhin:{n:'',lv:1,ex:0},kikaku:{n:'',lv:1,ex:0}};showScr('title-screen');checkSave();}});
+document.getElementById('ct-next').addEventListener('click',()=>advC());
+document.getElementById('ye-next').addEventListener('click',()=>goDF());
+document.getElementById('rd-next').addEventListener('click',()=>advFromResult());
+document.getElementById('gw-next').addEventListener('click',()=>{G.ph='training';saveGame();render();});
+document.getElementById('decay-next').addEventListener('click',()=>goDFfes());
+document.getElementById('df-next').addEventListener('click',()=>startNYFromDF());
+document.getElementById('an-next').addEventListener('click',()=>{G.ph='training';saveGame();render();});
+function checkSave(){if(hasSave()){document.getElementById('continue-btn').style.display='block';document.getElementById('delete-btn').style.display='block';}else{document.getElementById('continue-btn').style.display='none';document.getElementById('delete-btn').style.display='none';}}
+checkSave();
+document.getElementById('bgm-toggle-btn').addEventListener('click',toggleBGM);
+document.getElementById('best-toggle-btn').addEventListener('click',function(){
+const area=document.getElementById('best-area');
+if(area.style.display==='none'){renderBest();area.style.display='block';}
+else{area.style.display='none';}
+});
+document.getElementById('graph-toggle-btn').addEventListener('click',function(){
+const area=document.getElementById('graph-area');
+if(area.style.display==='none'){area.style.display='block';drawGraph();}
+else{area.style.display='none';}
+});
+function drawGraph(){
+const canvas=document.getElementById('graph-canvas');if(!canvas)return;
+const ctx=canvas.getContext('2d');const W=canvas.width,H=canvas.height;
+ctx.clearRect(0,0,W,H);
+const hist=G.hist||[];if(hist.length===0){ctx.font='12px DotGothic16';ctx.fillStyle='#888';ctx.textAlign='center';ctx.fillText('大会結果がまだありません',W/2,H/2);return;}
+const pad={t:20,b:30,l:45,r:45};const gW=W-pad.l-pad.r,gH=H-pad.t-pad.b;
+const years=hist.map(h=>h.year);const kds=hist.map(h=>h.kd);const mems=hist.map(h=>h.members);
+const kdMax=72000;const memMax=150;
+const n=hist.length;
+ctx.strokeStyle='#ddd';ctx.lineWidth=1;
+for(let i=0;i<=4;i++){const y=pad.t+gH*(i/4);ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(W-pad.r,y);ctx.stroke();}
+ctx.font='9px DotGothic16';ctx.textAlign='center';ctx.fillStyle='#666';
+for(let i=0;i<n;i++){const x=pad.l+(n===1?gW/2:gW*i/(n-1));ctx.fillText(years[i]+'年',x,H-8);}
+ctx.textAlign='right';ctx.fillStyle='#dc3545';
+for(let i=0;i<=4;i++){const y=pad.t+gH*(1-i/4);ctx.fillText(Math.round(kdMax*i/4),pad.l-4,y+3);}
+ctx.textAlign='left';ctx.fillStyle='#2196f3';
+for(let i=0;i<=4;i++){const y=pad.t+gH*(1-i/4);ctx.fillText(Math.round(memMax*i/4)+'人',W-pad.r+4,y+3);}
+ctx.strokeStyle='#dc3545';ctx.lineWidth=2;ctx.beginPath();
+for(let i=0;i<n;i++){const x=pad.l+(n===1?gW/2:gW*i/(n-1));const y=pad.t+gH*(1-kds[i]/kdMax);if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);}
+ctx.stroke();
+for(let i=0;i<n;i++){const x=pad.l+(n===1?gW/2:gW*i/(n-1));const y=pad.t+gH*(1-kds[i]/kdMax);ctx.beginPath();ctx.arc(x,y,3,0,Math.PI*2);ctx.fillStyle='#dc3545';ctx.fill();}
+ctx.strokeStyle='#2196f3';ctx.lineWidth=2;ctx.beginPath();
+for(let i=0;i<n;i++){const x=pad.l+(n===1?gW/2:gW*i/(n-1));const y=pad.t+gH*(1-mems[i]/memMax);if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);}
+ctx.stroke();
+for(let i=0;i<n;i++){const x=pad.l+(n===1?gW/2:gW*i/(n-1));const y=pad.t+gH*(1-mems[i]/memMax);ctx.beginPath();ctx.arc(x,y,3,0,Math.PI*2);ctx.fillStyle='#2196f3';ctx.fill();}
+ctx.font='10px DotGothic16';ctx.fillStyle='#dc3545';ctx.textAlign='left';ctx.fillText('● 感動力',pad.l,12);
+ctx.fillStyle='#2196f3';ctx.fillText('● メンバー数',pad.l+80,12);
+}
+document.getElementById('lc-content').addEventListener('click',function(e){
+const btn=e.target.closest('[data-lc]');if(!btn)return;
+const act=btn.getAttribute('data-lc'),key=btn.getAttribute('data-key'),idx=btn.getAttribute('data-idx');
+switch(act){
+case'err':G.lcd=true;G.ph='training';render();break;
+case'fin':finLC();break;
+case'startP':startP();break;
+case'confRep':confRep();break;
+case'sel':selP(parseInt(idx));break;
+case'nextL':nextL();break;
+case'applyNL':applyNL(key);break;
+case'doRep':doRep(key);break;
+case'canRep':canRep();break;
+}});
+</script>
+</body>
+</html>
