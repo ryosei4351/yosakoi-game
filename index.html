@@ -556,13 +556,13 @@ if(s.yaruki>=90&&['furi','kousei','koe','tai','taiken'].includes(id))boost=true;
 switch(id){
 case'furi':{const m=lm('furi')*y;addS('odori',Math.round(130*m));addS('tairyoku',Math.round(90*m));addS('koe',Math.round(40*m));addTW(Math.round(100*y));s.hirou=Math.min(100,s.hirou+5+Math.floor(Math.random()*4));isTr=true;addEx('furi');title='振り練を行った';break;}
 case'kousei':{const m=lm('sakuhin')*y;addS('kousei',Math.round(130*m));addS('odori',Math.round(90*m));addTW(Math.round(100*y));s.hirou=Math.min(100,s.hirou+5+Math.floor(Math.random()*4));isTr=true;addEx('sakuhin');title='構成練を行った';break;}
-case'koe':{const m=lm('sakuhin')*y;addS('koe',Math.round(380*m));addTW(Math.round(100*y));s.hirou=Math.min(100,s.hirou+5+Math.floor(Math.random()*4));isTr=true;ci=false;addEx('sakuhin');title='声出しを行った';break;}
-case'tai':{const m=lm('furi')*y;addS('tairyoku',Math.round(380*m));s.hirou=Math.min(100,s.hirou+5+Math.floor(Math.random()*4));isTr=true;addEx('furi');title='体力トレを行った';break;}
+case'koe':{const m=lm('sakuhin')*y;addS('koe',Math.round(220*m));addTW(Math.round(100*y));s.hirou=Math.min(100,s.hirou+5+Math.floor(Math.random()*4));isTr=true;ci=false;addEx('sakuhin');title='声出しを行った';break;}
+case'tai':{const m=lm('furi')*y;addS('tairyoku',Math.round(220*m));s.hirou=Math.min(100,s.hirou+5+Math.floor(Math.random()*4));isTr=true;addEx('furi');title='体力トレを行った';break;}
 case'taiken':{addS('odori',Math.round(100*y));addTW(Math.round(100*y));s.hirou=Math.min(100,s.hirou+5);isTr=true;addEx('kikaku');const rc=Math.min(60,s.teamwork/150);if(Math.random()*100<rc){const a=Math.min(3,Math.floor(Math.random()*3)+1);const before=s.members;s.members=Math.min(150,s.members+a);const actual=s.members-before;s.yaruki=Math.min(100,s.yaruki+10);title=`体験練 ${actual}人加入!`;}else title='体験練 加入者なし';break;}
 case'kikaku':{G.kp++;s.hirou=Math.max(0,s.hirou-10);ci=false;addEx('daihyo');addEx('kikaku');if(G.kp>=3){G.kp=0;const ts=['g','b','u'],p=ts[Math.floor(Math.random()*3)];const dm=lm('daihyo'),km=lm('kikaku');s.yaruki=Math.min(100,s.yaruki+Math.round(25*dm));addTW(Math.round(800*km));
-if(p==='g'){addS('odori',Math.round(800*lm('furi')));addS('kousei',Math.round(800*lm('sakuhin')));addS('koe',Math.round(720*lm('sakuhin')));addS('tairyoku',Math.round(400*lm('furi')));title='合宿を実施!';}
+if(p==='g'){addS('odori',Math.round(680*lm('furi')));addS('kousei',Math.round(680*lm('sakuhin')));addS('koe',Math.round(600*lm('sakuhin')));addS('tairyoku',Math.round(280*lm('furi')));title='合宿を実施!';}
 else if(p==='b'){s.hirou=0;addS('tairyoku',Math.round(500*lm('furi')));addS('odori',Math.round(200*lm('furi')));addTW(Math.round(300*lm('kikaku')));title='BBQを実施!';}
-else{addS('tairyoku',Math.round(900*lm('furi')));addS('koe',Math.round(500*lm('sakuhin')));addS('odori',Math.round(300*lm('furi')));s.hirou=Math.min(100,s.hirou+12);title='運動会を実施!';}}else title=`企画準備 (${G.kp}/3)`;break;}
+else{addS('tairyoku',Math.round(900*lm('furi')));addS('koe',Math.round(500*lm('sakuhin')));addS('odori',Math.round(300*lm('furi')));s.hirou=Math.min(100,s.hirou+12);title='運動会を実施!';}
 case'yasumi':{const rr=Math.random();let hr=20,ht='休みを取った';if(rr<0.1){hr=10;ht='あまり寝付けなかった...';}else if(rr>0.9){hr=40;ht='ぐっすり眠れた!';}s.hirou=Math.max(0,s.hirou-hr);s.yaruki=Math.min(100,s.yaruki+10+Math.floor(Math.random()*6));s.teamwork=Math.max(0,s.teamwork-50);ci=false;addEx('daihyo');title=ht;break;}
 case'enbu':{const e=getEB();if(e){const fx=rollEB(e.ex);applyEB(fx);s.hirou=Math.min(100,s.hirou+e.ft);if(e.onsen)s.hirou=Math.max(0,s.hirou-e.ft*2);G.cp+=e.cp;const ykLoss=1+Math.floor(Math.random()*5);s.yaruki=Math.max(0,s.yaruki-ykLoss);let mj=false;if(Math.random()<.25){const a=Math.min(3,Math.floor(Math.random()*3)+1);s.members=Math.min(150,s.members+a);s.yaruki=Math.min(100,s.yaruki+10);mj=true;}title=mj?`${e.n} メンバー加入!`:`${e.n}に参加`;}break;}
 }
@@ -953,6 +953,7 @@ case'canRep':canRep();break;
 </body>
 
 </html>
+
 
 
 
