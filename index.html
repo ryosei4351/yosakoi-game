@@ -704,14 +704,18 @@ if(inI)ic.push(G.tn);
 let sA,pA=false;if(inS&&Math.random()<.1){sA=G.tn;pA=true;}
 else{const sn=se.filter(t=>t!==G.tn);sA=sn[Math.floor(Math.random()*sn.length)];}
 const fF=[...fi,sA],pIF=inF||pA;
-let fr='final';if(pIF&&inF){if(adj>=TH.t)fr='taisho';else if(adj>=TH.j)fr='jun';}
+const finalKdMap={};
+for(const t of fF){finalKdMap[t]=t===G.tn?kd:(G.rv&&G.rv[t]?G.rv[t].kd:5000);}
+const sortedFinals=[...fF].sort((a,b)=>finalKdMap[b]-finalKdMap[a]);
+const tT=sortedFinals[0];
+const jT=[sortedFinals[1],sortedFinals[2]];
+let fr='final';
+if(pIF){if(G.tn===tT)fr='taisho';else if(jT.includes(G.tn))fr='jun';}
 let rt='',rl=0;
 if(sieve===0){rt='審査落ち';rl=0;}else if(sieve===1){rt='一次審査員賞';rl=1;}
 else if(sieve===2&&!pA){rt='セミファイナル進出';rl=2;}
-else if(pA){rt='ファイナル進出(セミから)';rl=3;fr='final';}
+else if(pA){rt='ファイナル進出(セミから)';rl=3;if(fr==='taisho'){rt='大賞';rl=5;}else if(fr==='jun'){rt='準大賞';rl=4;}}
 else{if(fr==='taisho'){rt='大賞';rl=5;}else if(fr==='jun'){rt='準大賞';rl=4;}else{rt='ファイナル進出';rl=3;}}
-const npf=fF.filter(t=>t!==G.tn);let tT,jT;
-if(rl===5){tT=G.tn;jT=[npf[0],npf[1]];}else if(rl===4){tT=npf[0];jT=[G.tn,npf[1]];}else{tT=npf[0];jT=[npf[1],npf[2]];}
 G.cc={teams,kd,lastKd,adj:Math.round(adj),cb,rt,rl,sieve,pA,fr,blk,fi,se,ic,sA,fF,tT,jT,pIF,blocked,rc,
 stages:bCS(teams,kd,lastKd,sieve,pA,fr,blk,fi,se,ic,sA,tT,jT,pIF,rl,blocked,rc)};G.cs=0;}
 
@@ -953,6 +957,7 @@ case'canRep':canRep();break;
 </body>
 
 </html>
+
 
 
 
