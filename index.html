@@ -959,7 +959,11 @@ ctx.clearRect(0,0,W,H);
 const hist=G.hist||[];if(hist.length===0){ctx.font='12px DotGothic16';ctx.fillStyle='#888';ctx.textAlign='center';ctx.fillText('大会結果がまだありません',W/2,H/2);return;}
 const pad={t:20,b:30,l:45,r:45};const gW=W-pad.l-pad.r,gH=H-pad.t-pad.b;
 const years=hist.map(h=>h.year);const kds=hist.map(h=>h.kd);const mems=hist.map(h=>h.members);
-const kdMax=72000;const memMax=150;
+const maxKd=Math.max(...kds);const maxMem=Math.max(...mems);
+const kdSteps=[5000,10000,15000,20000,30000,40000,50000,60000,72000];
+const memSteps=[15,20,30,40,50,75,100,150];
+function niceMax(val,steps){for(const s of steps){if(val<=s)return s;}return steps[steps.length-1];}
+const kdMax=niceMax(maxKd,kdSteps);const memMax=niceMax(maxMem,memSteps);
 const n=hist.length;
 ctx.strokeStyle='#ddd';ctx.lineWidth=1;
 for(let i=0;i<=4;i++){const y=pad.t+gH*(i/4);ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(W-pad.r,y);ctx.stroke();}
@@ -998,6 +1002,7 @@ case'canRep':canRep();break;
 </body>
 
 </html>
+
 
 
 
