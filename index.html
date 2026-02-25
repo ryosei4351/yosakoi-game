@@ -537,8 +537,7 @@ s:{odori:100,kousei:0,koe:100,tairyoku:100,teamwork:100,yaruki:100,hirou:0,membe
 ld:{daihyo:{n:'',lv:1,ex:0,years:1,isNew:false},furi:{n:'',lv:1,ex:0,years:1,isNew:false},sakuhin:{n:'',lv:1,ex:0,years:1,isNew:false},kikaku:{n:'',lv:1,ex:0,years:1,isNew:false}},
 kp:0,cr:[],cs:0,cc:null,lc:null,yed:null,rd:null,cp:0,lvups:[],rv:null,hist:[],usedQs:{},bestKd:null};
 
-function exN(l,isNew){const base=Math.max(1,Math.ceil(l/25));return isNew?Math.max(1,Math.ceil(base*0.7)):base;}
-function addEx(k){const l=G.ld[k];if(l.lv>=100)return;l.ex++;if(l.ex>=exN(l.lv,l.isNew)){l.ex=0;l.lv++;G.lvups.push(`${LN[k]}の${l.n}がLv${l.lv}にアップ!`);}}
+function addEx(k){const l=G.ld[k];if(l.lv>=100)return;l.lv++;G.lvups.push(`${LN[k]}の${l.n}がLv${l.lv}にアップ!`);}
 function lm(k){return 1+(G.ld[k].lv-1)*.0202;}
 function dim(v){if(v<2000)return 1;if(v<3000)return .85;if(v<4000)return .7;if(v<5000)return .55;if(v<6000)return .4;if(v<7000)return .3;if(v<8000)return .2;return .1;}
 function addS(k,b){const c=G.s[k]||0;G.s[k]=c+Math.max(1,Math.round(b*dim(c)));}
@@ -1011,6 +1010,7 @@ case'canRep':canRep();break;
 </body>
 
 </html>
+
 
 
 
