@@ -814,11 +814,29 @@ if(!(pIF&&fr==='taisho'))st.push({h:`<div class="contest-text">今年の大賞�
 else st.push({h:`<div class="contest-text">準大賞は</div><div class="contest-result-big">${jT[0]}<br>${jT[1]}</div>`});
 return st;}
 
-function advC(){G.cs++;const c=G.cc;if(G.cs>=c.stages.length){G.cr.push({year:G.yr,result:c.rt,teams:c.teams,kd:c.kd,rl:c.rl});if(!G.hist)G.hist=[];G.hist.push({year:G.yr,kd:c.kd,members:G.s.members});
+function advC(){
+G.cs++;const c=G.cc;
+if(G.cs>=c.stages.length){
+G.cr.push({year:G.yr,result:c.rt,teams:c.teams,kd:c.kd,rl:c.rl});
+if(!G.hist)G.hist=[];
+G.hist.push({year:G.yr,kd:c.kd,members:G.s.members});
 updateBestKd();
 G.cd=true;G.lcd=false;G.cp=0;G.mo=6;G.wk=3;
-if(!G.firstTaisho&&c.rl===5){G.firstTaisho=true;document.getElementById('submit-teamname').value=G.tn;document.getElementById('submit-nickname').value='';document.getElementById('submit-record').textContent=`${G.yr}年目で初大賞 / 感動力: ${c.kd} / メンバー: ${G.s.members}人`;G.ph='submit';}
-else if(G.yr%10===0){G.ph='anniversary';execAnniversary();}else{G.ph='training';}saveGame();}render();}
+if(!G.firstTaisho&&c.rl===5){
+G.firstTaisho=true;
+document.getElementById('submit-teamname').value=G.tn;
+document.getElementById('submit-nickname').value='';
+document.getElementById('submit-record').textContent=G.yr+'年目で初大賞 / 感動力: '+c.kd+' / メンバー: '+G.s.members+'人';
+G.ph='submit';
+}else if(G.yr%10===0){
+G.ph='anniversary';execAnniversary();
+}else{
+G.ph='training';
+}
+saveGame();
+}
+render();
+}
 
 function prepLC(){const cr=G.cr.find(r=>r.year===G.yr);let baseBp=30;if(cr){const pm={0:30,1:50,2:60,3:70,4:80,5:90};baseBp=pm[cr.rl]||30;}
 function calcBp(k){const y=G.ld[k].years||1;let p=baseBp;if(y>=5)p=Math.max(5,p-(y-4)*15);return p;}
@@ -1123,6 +1141,7 @@ case'canRep':canRep();break;
 </body>
 
 </html>
+
 
 
 
