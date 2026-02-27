@@ -143,6 +143,7 @@ h1{text-align:center;font-size:22px;margin-bottom:4px;}
 </div>
 <div style="display:flex;gap:4px;margin-top:6px;">
 <button class="btn-small btn-secondary" id="bgm-toggle-btn" style="flex:1;">BGM ON</button>
+<button class="btn-small btn-secondary" id="ranking-open-btn" style="flex:1;">ランキング</button>
 </div>
 <div style="display:flex;gap:4px;margin-top:6px;">
 <button class="btn-small btn-secondary" id="save-confirm-btn" style="flex:1;">セーブ</button>
@@ -182,6 +183,34 @@ h1{text-align:center;font-size:22px;margin-bottom:4px;}
 
 <div id="df-screen" class="screen">
 <div class="df-box"><h2>ド派手フェスティバル</h2><div id="df-content"></div><button class="btn" id="df-next">新年度スタート</button></div>
+</div>
+
+<div id="submit-screen" class="screen">
+<div class="contest-box">
+<h2>🏆 初大賞達成！</h2>
+<div id="submit-content">
+<div class="contest-text">記録をランキングに登録しますか？</div>
+<div class="input-group" style="text-align:left;margin-top:8px;">
+<label>登録するチーム名（変更可）</label>
+<input type="text" id="submit-teamname" placeholder="チーム名">
+</div>
+<div class="input-group" style="text-align:left;">
+<label>ニックネーム</label>
+<input type="text" id="submit-nickname" placeholder="例：たろう">
+</div>
+<div id="submit-record" style="font-size:12px;color:#666;margin:8px 0;"></div>
+<button class="btn" id="submit-send-btn">ランキングに送信する</button>
+<button class="btn btn-secondary" id="submit-skip-btn">スキップ</button>
+</div>
+</div>
+</div>
+
+<div id="ranking-screen" class="screen">
+<div class="contest-box">
+<h2>🏆 大賞最短記録ランキング</h2>
+<div id="ranking-content" style="font-size:11px;text-align:left;"></div>
+<button class="btn" id="ranking-close-btn">閉じる</button>
+</div>
 </div>
 
 <script>
@@ -306,6 +335,7 @@ if(btn)btn.textContent=bgmPlaying?'BGM OFF':'BGM ON';
 }
 
 const SAVE_KEY='yosakoi_save';
+const GAS_URL='https://script.google.com/macros/s/AKfycbw6bmYehQBOzoMEw_fPKWYYR18-lvgFVJOCZv_Cqu7BNzgJDrexqwRNQvFH5Q1cnJBCtA/exec';
 function saveGame(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(G));}catch(e){}}
 function loadGame(){try{const d=localStorage.getItem(SAVE_KEY);if(!d)return null;return JSON.parse(d);}catch(e){return null;}}
 function deleteSave(){try{localStorage.removeItem(SAVE_KEY);}catch(e){}}
@@ -558,7 +588,7 @@ return sh;
 const G={tn:'',yr:1,mo:1,wk:2,ph:'training',trc:0,cd:false,lcd:false,
 s:{odori:100,kousei:0,koe:100,tairyoku:100,teamwork:100,yaruki:100,hirou:0,members:10},
 ld:{daihyo:{n:'',lv:1,ex:0,years:1,isNew:false},furi:{n:'',lv:1,ex:0,years:1,isNew:false},sakuhin:{n:'',lv:1,ex:0,years:1,isNew:false},kikaku:{n:'',lv:1,ex:0,years:1,isNew:false}},
-kp:0,cr:[],cs:0,cc:null,lc:null,yed:null,rd:null,cp:0,lvups:[],rv:null,hist:[],usedQs:{},bestKd:null};
+kp:0,cr:[],cs:0,cc:null,lc:null,yed:null,rd:null,cp:0,lvups:[],rv:null,hist:[],usedQs:{},bestKd:null,firstTaisho:false};
 
 function addEx(k){const l=G.ld[k];if(l.lv>=100)return;l.lv++;G.lvups.push(`${LN[k]}の${l.n}がLv${l.lv}にアップ!`);}
 function lm(k){return 1+(G.ld[k].lv-1)*.0202;}
@@ -786,7 +816,9 @@ return st;}
 
 function advC(){G.cs++;const c=G.cc;if(G.cs>=c.stages.length){G.cr.push({year:G.yr,result:c.rt,teams:c.teams,kd:c.kd,rl:c.rl});if(!G.hist)G.hist=[];G.hist.push({year:G.yr,kd:c.kd,members:G.s.members});
 updateBestKd();
-G.cd=true;G.lcd=false;G.cp=0;G.mo=6;G.wk=3;if(G.yr%10===0){G.ph='anniversary';execAnniversary();}else{G.ph='training';}saveGame();}render();}
+G.cd=true;G.lcd=false;G.cp=0;G.mo=6;G.wk=3;
+if(!G.firstTaisho&&c.rl===5){G.firstTaisho=true;document.getElementById('submit-teamname').value=G.tn;document.getElementById('submit-nickname').value='';document.getElementById('submit-record').textContent=`${G.yr}年目で初大賞 / 感動力: ${c.kd} / メンバー: ${G.s.members}人`;G.ph='submit';}
+else if(G.yr%10===0){G.ph='anniversary';execAnniversary();}else{G.ph='training';}saveGame();}render();}
 
 function prepLC(){const cr=G.cr.find(r=>r.year===G.yr);let baseBp=30;if(cr){const pm={0:30,1:50,2:60,3:70,4:80,5:90};baseBp=pm[cr.rl]||30;}
 function calcBp(k){const y=G.ld[k].years||1;let p=baseBp;if(y>=5)p=Math.max(5,p-(y-4)*15);return p;}
@@ -864,6 +896,8 @@ function showScr(id){document.querySelectorAll('.screen').forEach(s=>s.classList
 function render(){switch(G.ph){
 case'tutorial':showScr('tutorial-screen');renderTut();break;
 case'setup':showScr('setup-screen');break;
+case'submit':showScr('submit-screen');break;
+case'ranking':showScr('ranking-screen');break;
 case'training':showScr('home-screen');updHome();break;
 case'result':showScr('result-screen');renderRD();break;
 case'contest':showScr('contest-screen');updC();break;
@@ -980,6 +1014,49 @@ document.getElementById('gw-next').addEventListener('click',()=>{G.ph='training'
 document.getElementById('decay-next').addEventListener('click',()=>goDFfes());
 document.getElementById('df-next').addEventListener('click',()=>startNYFromDF());
 document.getElementById('an-next').addEventListener('click',()=>{G.ph='training';saveGame();render();});
+
+document.getElementById('submit-send-btn').addEventListener('click',()=>{
+const tn=document.getElementById('submit-teamname').value.trim();
+const nn=document.getElementById('submit-nickname').value.trim();
+if(!tn||!nn){alert('チーム名とニックネームを入力してください');return;}
+const taishoRecord=G.cr.find(r=>r.rl===5);
+if(!taishoRecord){alert('データエラー');return;}
+const payload={teamName:tn,nickname:nn,years:taishoRecord.year,kd:taishoRecord.kd,members:G.s.members};
+document.getElementById('submit-send-btn').textContent='送信中...';
+document.getElementById('submit-send-btn').disabled=true;
+fetch(GAS_URL,{method:'POST',body:JSON.stringify(payload)})
+.then(r=>r.json())
+.then(d=>{if(d.ok){alert('送信しました！ありがとうございます');}else{alert('送信に失敗しました');} G.ph='training';saveGame();render();})
+.catch(()=>{alert('通信エラーが発生しました');G.ph='training';saveGame();render();});
+});
+
+document.getElementById('submit-skip-btn').addEventListener('click',()=>{
+if(G.yr%10===0){G.ph='anniversary';execAnniversary();}else{G.ph='training';}saveGame();render();
+});
+
+document.getElementById('ranking-open-btn').addEventListener('click',()=>{
+const con=document.getElementById('ranking-content');
+con.innerHTML='<div style="text-align:center;padding:16px;color:#888;">読み込み中...</div>';
+showScr('ranking-screen');
+fetch(GAS_URL)
+.then(r=>r.json())
+.then(data=>{
+if(!data||data.length===0){con.innerHTML='<div style="text-align:center;color:#888;">まだ記録がありません</div>';return;}
+let h='<div style="display:grid;grid-template-columns:28px 1fr 60px 60px;gap:2px 6px;font-size:10px;font-weight:bold;border-bottom:1px solid #ccc;padding-bottom:4px;margin-bottom:4px;">';
+h+='<span>順位</span><span>チーム / ニックネーム</span><span style="text-align:right">達成年</span><span style="text-align:right">感動力</span></div>';
+data.forEach((r,i)=>{
+const bg=i===0?'background:#fff8dc;':i===1?'background:#f5f5f5;':i===2?'background:#fdf0e0;':'';
+h+=`<div style="display:grid;grid-template-columns:28px 1fr 60px 60px;gap:2px 6px;font-size:10px;padding:3px 0;border-bottom:1px solid #eee;${bg}">`;
+h+=`<span style="color:#888;">${i+1}位</span>`;
+h+=`<span>${r.teamName}<br><span style="color:#888;font-size:9px;">${r.nickname}</span></span>`;
+h+=`<span style="text-align:right;">${r.years}年目</span>`;
+h+=`<span style="text-align:right;">${r.kd}</span>`;
+h+='</div>';});
+con.innerHTML=h;})
+.catch(()=>{con.innerHTML='<div style="text-align:center;color:#c00;">読み込みに失敗しました</div>';});
+});
+
+document.getElementById('ranking-close-btn').addEventListener('click',()=>{G.ph='training';render();});
 function checkSave(){if(hasSave()){document.getElementById('continue-btn').style.display='block';document.getElementById('delete-btn').style.display='block';}else{document.getElementById('continue-btn').style.display='none';document.getElementById('delete-btn').style.display='none';}}
 checkSave();
 document.getElementById('rival-toggle-btn').addEventListener('click',function(){
@@ -1048,6 +1125,7 @@ case'canRep':canRep();break;
 </body>
 
 </html>
+
 
 
 
