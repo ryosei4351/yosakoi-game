@@ -965,9 +965,9 @@ h+=`</div>`;
 document.getElementById('best-content').innerHTML=h;
 }
 
-document.getElementById('start-btn').addEventListener('click',()=>{tutIdx=0;showScr('tutorial-screen');renderTut();});
-document.getElementById('tut-prev').addEventListener('click',()=>{if(tutIdx>0){tutIdx--;renderTut();}});
-document.getElementById('tut-next').addEventListener('click',()=>{if(tutIdx<TUT_SLIDES.length-1){tutIdx++;renderTut();}else{showScr('setup-screen');}});
+document.getElementById('start-btn').addEventListener('click',()=>{tutIdx=0;G.ph='tutorial';render();});
+document.getElementById('tut-prev').addEventListener('click',()=>{if(tutIdx>0){tutIdx--;render();}});
+document.getElementById('tut-next').addEventListener('click',()=>{if(tutIdx<TUT_SLIDES.length-1){tutIdx++;render();}else{G.ph='setup';render();}});
 document.getElementById('setup-btn').addEventListener('click',()=>{const tn=document.getElementById('team-name').value.trim();const ns={daihyo:document.getElementById('leader-daihyo').value.trim(),furi:document.getElementById('leader-furi').value.trim(),sakuhin:document.getElementById('leader-sakuhin').value.trim(),kikaku:document.getElementById('leader-kikaku').value.trim()};if(!tn||!ns.daihyo||!ns.furi||!ns.sakuhin||!ns.kikaku){alert('すべての名前を入力してください');return;}G.tn=tn;for(const k of Object.keys(ns))G.ld[k].n=ns[k];G.lcd=false;G.rv=initRivals();gameStarted=true;showMsg('');saveGame();render();});
 document.getElementById('continue-btn').addEventListener('click',()=>{const d=loadGame();if(!d){alert('セーブデータが見つかりません');return;}restoreGame(d);gameStarted=true;if(G.ph==='result'||G.ph==='contest'||G.ph==='leader_change'||G.ph==='year_end'||G.ph==='df')G.ph='training';showMsg('');render();});
 document.getElementById('delete-btn').addEventListener('click',()=>{if(confirm('セーブデータを削除しますか？')){deleteSave();document.getElementById('continue-btn').style.display='none';document.getElementById('delete-btn').style.display='none';alert('削除しました');}});
@@ -1048,6 +1048,7 @@ case'canRep':canRep();break;
 </body>
 
 </html>
+
 
 
 
