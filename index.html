@@ -335,7 +335,7 @@ if(btn)btn.textContent=bgmPlaying?'BGM OFF':'BGM ON';
 }
 
 const SAVE_KEY='yosakoi_save';
-const GAS_URL='https://script.google.com/macros/s/AKfycbw6bmYehQBOzoMEw_fPKWYYR18-lvgFVJOCZv_Cqu7BNzgJDrexqwRNQvFH5Q1cnJBCtA/exec';
+const GAS_URL='https://script.google.com/macros/s/AKfycbxQnmjbqbV3H_QGLhqmDZYZV2mu6XdSBoW4p2pkzHgWDzyKtD94n6uAQ1wm_GDVAcUFvg/exec';
 function saveGame(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(G));}catch(e){}}
 function loadGame(){try{const d=localStorage.getItem(SAVE_KEY);if(!d)return null;return JSON.parse(d);}catch(e){return null;}}
 function deleteSave(){try{localStorage.removeItem(SAVE_KEY);}catch(e){}}
@@ -1142,6 +1142,7 @@ case'canRep':canRep();break;
 </body>
 
 </html>
+
 
 
 
