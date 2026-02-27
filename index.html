@@ -75,18 +75,34 @@ h1{text-align:center;font-size:22px;margin-bottom:4px;}
 <body>
 
 <div id="title-screen" class="screen active">
-<div style="max-width:480px;margin:0 auto;">
+<div style="max-width:480px;margin:0 auto;text-align:center;padding-top:40px;">
 <h1>よさこいチームをつくろう！</h1>
 <p class="subtitle">チームを育てて、大会を目指せ</p>
+<button class="btn" id="start-btn" style="margin-top:30px;">はじめる</button>
+<button class="btn btn-secondary" id="continue-btn" style="display:none;margin-top:6px;">続きから再開</button>
+<button class="btn btn-secondary" id="delete-btn" style="display:none;margin-top:4px;font-size:11px;color:#999;">セーブデータを削除</button>
+</div></div>
+
+<div id="tutorial-screen" class="screen">
+<div style="max-width:480px;margin:0 auto;">
+<div id="tut-content" style="background:#f5f5f5;border:1px solid #ccc;border-radius:4px;padding:16px;min-height:280px;"></div>
+<div style="display:flex;gap:8px;margin-top:12px;">
+<button class="btn btn-secondary" id="tut-prev" style="display:none;">← 戻る</button>
+<button class="btn" id="tut-next">次へ →</button>
+</div>
+</div></div>
+
+<div id="setup-screen" class="screen">
+<div style="max-width:480px;margin:0 auto;">
+<h1 style="margin-bottom:4px;">チームを作ろう</h1>
+<p class="subtitle">チーム名と班長の名前を決めよう</p>
 <div class="input-group"><label>チーム名</label><input type="text" id="team-name" placeholder="例：海物語"></div>
 <div class="section-title">班長の名前</div>
 <div class="input-group"><label>代表班長（やる気に影響）</label><input type="text" id="leader-daihyo" placeholder="名前を入力"></div>
 <div class="input-group"><label>振り班長（踊り・体力に影響）</label><input type="text" id="leader-furi" placeholder="名前を入力"></div>
 <div class="input-group"><label>作品班長（構成・声に影響）</label><input type="text" id="leader-sakuhin" placeholder="名前を入力"></div>
 <div class="input-group"><label>企画班長（チームワークに影響）</label><input type="text" id="leader-kikaku" placeholder="名前を入力"></div>
-<button class="btn" id="start-btn">ゲーム開始</button>
-<button class="btn btn-secondary" id="continue-btn" style="display:none;margin-top:6px;">続きから再開</button>
-<button class="btn btn-secondary" id="delete-btn" style="display:none;margin-top:4px;font-size:11px;color:#999;">セーブデータを削除</button>
+<button class="btn" id="setup-btn">ゲーム開始！</button>
 </div></div>
 
 <div id="home-screen" class="screen">
@@ -296,6 +312,13 @@ function deleteSave(){try{localStorage.removeItem(SAVE_KEY);}catch(e){}}
 function hasSave(){try{return!!localStorage.getItem(SAVE_KEY);}catch(e){return false;}}
 function restoreGame(d){for(const k of Object.keys(d)){if(typeof G[k]==='object'&&G[k]!==null&&!Array.isArray(G[k])){Object.assign(G[k],d[k]);}else{G[k]=d[k];}}}
 let gameStarted=false;
+let tutIdx=0;
+const TUT_SLIDES=[
+{title:'よさこいチームをつくろう！',body:'チームを育てて、年に一度の<strong>よさこい大会</strong>で<strong>大賞</strong>を目指すゲームです。<br><br>毎週1つ行動を選び、チームのステータスを上げていこう。<br><br>大会は毎年<strong>6月</strong>に開催されます。'},
+{title:'毎週、行動を選ぼう',body:'毎週1回、行動を選んでチームを育てます。<br><br>● <strong>振り練</strong> → 踊りが上がる<br>● <strong>構成練</strong> → 構成が上がる<br>● <strong>声出し</strong> → 声が上がる<br>● <strong>体力トレ</strong> → 体力が上がる<br>● <strong>休み</strong> → 疲労回復・やる気UP<br><br><strong>やる気</strong>が高いほど練習効果UP！<br><strong>疲労</strong>が溜まるとケガのリスクがあります。'},
+{title:'ステータスと感動力',body:'チームには5つのステータスがあります。<br><br>● <strong>踊り</strong>：演舞の完成度<br>● <strong>構成</strong>：作品の流れ・演出<br>● <strong>声</strong>：掛け声・表現力<br>● <strong>体力</strong>：最後まで踊りきる力<br>● <strong>チームワーク</strong>：まとまりと連携<br><br>これらを合わせた<strong>感動力</strong>が高いほど<br>大会で好成績を残せます。'},
+{title:'4人の班長',body:'チームには4人の班長がいます。<br><br>● <strong>代表班長</strong>：やる気に影響<br>● <strong>振り班長</strong>：踊り・体力に影響<br>● <strong>作品班長</strong>：構成・声に影響<br>● <strong>企画班長</strong>：チームワークに影響<br><br>班長はレベルアップするほど練習効果がUPします。<br>大会後には班長との話し合いがあり<br>来年も続けるか決まります。'},
+];
 window.addEventListener('beforeunload',function(e){if(gameStarted){e.preventDefault();e.returnValue='';}});
 
 const TH={i:25000,s:35000,f:46000,j:60000,t:80000};
@@ -827,8 +850,20 @@ s:{odori:G.s.odori,kousei:G.s.kousei,koe:G.s.koe,tairyoku:G.s.tairyoku,teamwork:
 ld:{daihyo:{n:G.ld.daihyo.n,lv:G.ld.daihyo.lv},furi:{n:G.ld.furi.n,lv:G.ld.furi.lv},sakuhin:{n:G.ld.sakuhin.n,lv:G.ld.sakuhin.lv},kikaku:{n:G.ld.kikaku.n,lv:G.ld.kikaku.lv}}};
 }}
   
+function renderTut(){
+const s=TUT_SLIDES[tutIdx];
+const isLast=tutIdx>=TUT_SLIDES.length-1;
+document.getElementById('tut-content').innerHTML=
+`<h2 style="font-size:16px;margin-bottom:16px;text-align:center;">${s.title}</h2>`+
+`<div style="font-size:12px;line-height:2;">${s.body}</div>`+
+`<div style="text-align:center;margin-top:16px;color:#888;font-size:11px;">${tutIdx+1} / ${TUT_SLIDES.length}</div>`;
+document.getElementById('tut-prev').style.display=tutIdx===0?'none':'block';
+document.getElementById('tut-next').textContent=isLast?'チームを作る →':'次へ →';
+}
 function showScr(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
 function render(){switch(G.ph){
+case'tutorial':showScr('tutorial-screen');renderTut();break;
+case'setup':showScr('setup-screen');break;
 case'training':showScr('home-screen');updHome();break;
 case'result':showScr('result-screen');renderRD();break;
 case'contest':showScr('contest-screen');updC();break;
@@ -930,7 +965,10 @@ h+=`</div>`;
 document.getElementById('best-content').innerHTML=h;
 }
 
-document.getElementById('start-btn').addEventListener('click',()=>{const tn=document.getElementById('team-name').value.trim();const ns={daihyo:document.getElementById('leader-daihyo').value.trim(),furi:document.getElementById('leader-furi').value.trim(),sakuhin:document.getElementById('leader-sakuhin').value.trim(),kikaku:document.getElementById('leader-kikaku').value.trim()};if(!tn||!ns.daihyo||!ns.furi||!ns.sakuhin||!ns.kikaku){alert('すべての名前を入力してください');return;}G.tn=tn;for(const k of Object.keys(ns))G.ld[k].n=ns[k];G.lcd=false;G.rv=initRivals();gameStarted=true;showMsg('');saveGame();render();});
+document.getElementById('start-btn').addEventListener('click',()=>{tutIdx=0;showScr('tutorial-screen');renderTut();});
+document.getElementById('tut-prev').addEventListener('click',()=>{if(tutIdx>0){tutIdx--;renderTut();}});
+document.getElementById('tut-next').addEventListener('click',()=>{if(tutIdx<TUT_SLIDES.length-1){tutIdx++;renderTut();}else{showScr('setup-screen');}});
+document.getElementById('setup-btn').addEventListener('click',()=>{const tn=document.getElementById('team-name').value.trim();const ns={daihyo:document.getElementById('leader-daihyo').value.trim(),furi:document.getElementById('leader-furi').value.trim(),sakuhin:document.getElementById('leader-sakuhin').value.trim(),kikaku:document.getElementById('leader-kikaku').value.trim()};if(!tn||!ns.daihyo||!ns.furi||!ns.sakuhin||!ns.kikaku){alert('すべての名前を入力してください');return;}G.tn=tn;for(const k of Object.keys(ns))G.ld[k].n=ns[k];G.lcd=false;G.rv=initRivals();gameStarted=true;showMsg('');saveGame();render();});
 document.getElementById('continue-btn').addEventListener('click',()=>{const d=loadGame();if(!d){alert('セーブデータが見つかりません');return;}restoreGame(d);gameStarted=true;if(G.ph==='result'||G.ph==='contest'||G.ph==='leader_change'||G.ph==='year_end'||G.ph==='df')G.ph='training';showMsg('');render();});
 document.getElementById('delete-btn').addEventListener('click',()=>{if(confirm('セーブデータを削除しますか？')){deleteSave();document.getElementById('continue-btn').style.display='none';document.getElementById('delete-btn').style.display='none';alert('削除しました');}});
 document.getElementById('save-confirm-btn').addEventListener('click',()=>{saveGame();alert('セーブしました');});
@@ -1010,6 +1048,7 @@ case'canRep':canRep();break;
 </body>
 
 </html>
+
 
 
 
