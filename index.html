@@ -1036,7 +1036,7 @@ document.getElementById('ranking-open-btn').addEventListener('click',()=>{
 const con=document.getElementById('ranking-content');
 con.innerHTML='<div style="text-align:center;padding:16px;color:#888;">読み込み中...</div>';
 showScr('ranking-screen');
-fetch(GAS_URL)
+fetch(GAS_URL+'?action=get')
 .then(r=>r.json())
 .then(data=>{
 if(!data||data.length===0){con.innerHTML='<div style="text-align:center;color:#888;">まだ記録がありません</div>';return;}
@@ -1123,6 +1123,7 @@ case'canRep':canRep();break;
 </body>
 
 </html>
+
 
 
 
