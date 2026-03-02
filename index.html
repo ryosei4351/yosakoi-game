@@ -357,11 +357,11 @@ window.addEventListener('beforeunload',function(e){if(gameStarted){e.preventDefa
 const TH={i:32000,s:40000,f:48000,j:60000,t:80000};
 const RV_RANGE={S:[56000,63000],A:[49000,56000],B:[42000,49000],C:[35000,42000],D:[28000,35000],E:[21000,28000],F:[14000,21000]};
 const RV_BASE=[
-{n:'BASSARI',br:'C'},{n:'北極星',br:'A'},{n:'奪家白猫',br:'A'},
+{n:'BASSARI',br:'C'},{n:'そり滑り',br:'A'},{n:'平和的価格',br:'A'},
 {n:'クエスチョン',br:'C'},{n:'まんなか',br:'C'},{n:'氷',br:'C'},{n:'闇一点',br:'C'},
 {n:'みんなで踊ろうぜ',br:'D'},{n:'遊び人',br:'C'},{n:'炭酸国際大学',br:'D'},{n:'曖＆昧ホールディングス',br:'B'},
-{n:'赤フン隊',br:'A'},{n:'ノーススター学園',br:'A'},
-{n:'つっぱりファラオーズ',br:'B'},{n:'チアダンサーズ',br:'D'},{n:'テンブリュー・ジン',br:'S'},{n:'テン・ジン',br:'S'},
+{n:'赤フン隊',br:'A'},{n:'ノーススター学園',br:'A'},{n:'お股',br:'A'},
+{n:'つっぱりファラオーズ',br:'B'},{n:'チアダンサーズ',br:'D'},{n:'全ブリュレ人',br:'S'},{n:'痛いし全身',br:'S'},
 {n:'D・K・D',br:'B'},{n:'輪っか',br:'S'},{n:'ラスク＆踊人',br:'C'},{n:'お見事',br:'D'},{n:'乳製品学園大学',br:'B'}
 ];
 const RV_GEN_RANKS=['S','A','A','B','B','B','B','B','B','B','B','C','C','C','C','C','D','D'];
@@ -607,7 +607,7 @@ function calcKForRanking(){const s=G.s;return Math.round((s.odori+s.kousei+s.koe
 function calcRank(){if(!G.rv)return null;const pk=calcK();let r=1;for(const k of Object.keys(G.rv)){if(G.rv[k].kd>pk)r++;}return{rank:r,total:Object.keys(G.rv).length+1};}
 function ym(){const y=G.s.yaruki;if(y>=100)return 1.3;if(y>=90)return 1.2;if(y>=80)return 1.1;if(y>=70)return 1.0;if(y>=50)return 0.8;if(y>=30)return 0.6;return 0.4;}
 function rank(v){if(v>=9000)return'S';if(v>=8000)return'A';if(v>=7000)return'B';if(v>=6000)return'C';if(v>=5000)return'D';if(v>=4000)return'E';if(v>=3000)return'F';return'G';}
-function rv(v){return rank(v)+' '+v;}
+function rv(v){return rank(v)+' '+(v/100).toFixed(2);}
 function tb(){return G.mo>=4&&!G.cd;}
 function meb(){return G.mo>=4&&G.mo<=6;}
 function mebo(){return G.mo>=1&&G.mo<=3;}
@@ -1148,6 +1148,7 @@ case'canRep':canRep();break;
 </body>
 
 </html>
+
 
 
 
