@@ -607,7 +607,7 @@ function calcKForRanking(){const s=G.s;return Math.round((s.odori+s.kousei+s.koe
 function calcRank(){if(!G.rv)return null;const pk=calcK();let r=1;for(const k of Object.keys(G.rv)){if(G.rv[k].kd>pk)r++;}return{rank:r,total:Object.keys(G.rv).length+1};}
 function ym(){const y=G.s.yaruki;if(y>=100)return 1.3;if(y>=90)return 1.2;if(y>=80)return 1.1;if(y>=70)return 1.0;if(y>=50)return 0.8;if(y>=30)return 0.6;return 0.4;}
 function rank(v){if(v>=9000)return'S';if(v>=8000)return'A';if(v>=7000)return'B';if(v>=6000)return'C';if(v>=5000)return'D';if(v>=4000)return'E';if(v>=3000)return'F';return'G';}
-function rv(v){return rank(v)+' '+(v/100).toFixed(2);}
+function rv(v){return rank(v)+' '+v;}
 function tb(){return G.mo>=4&&!G.cd;}
 function meb(){return G.mo>=4&&G.mo<=6;}
 function mebo(){return G.mo>=1&&G.mo<=3;}
@@ -988,7 +988,7 @@ const br=e.br?` [${e.br}]`:'';
 h+=`<div style="display:flex;align-items:center;padding:2px 4px;border-bottom:1px solid #eee;${bg}">
 <span style="color:#888;min-width:32px;font-size:10px;">${i+1}位</span>
 <span style="flex:1;font-size:10px;${e.isPlayer?'font-weight:bold;color:#c00;':''}">${e.isPlayer?'★ '+e.n:e.n}${br}</span>
-<span style="font-weight:bold;font-size:10px;">${(e.kd/100).toFixed(2)}</span>
+<span style="font-weight:bold;font-size:10px;">${e.kd}</span>
 </div>`;}
 document.getElementById('rival-content').innerHTML=h;
 }
@@ -996,11 +996,11 @@ function renderBest(){
 const b=G.bestKd;if(!b)return;
 let h=`<div style="font-weight:bold;margin-bottom:4px;">🏆 最高感動力: ${b.kd}（${b.year}年目 ${b.mo}月${b.wk}週）</div>`;
 h+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:2px 12px;margin-bottom:4px;">`;
-h+=`<div style="display:flex;justify-content:space-between;"><span style="color:#666;">踊り</span><span style="font-weight:bold;">${(b.s.odori/100).toFixed(2)}</span></div>`;
-h+=`<div style="display:flex;justify-content:space-between;"><span style="color:#666;">構成</span><span style="font-weight:bold;">${(b.s.kousei/100).toFixed(2)}</span></div>`;
-h+=`<div style="display:flex;justify-content:space-between;"><span style="color:#666;">声</span><span style="font-weight:bold;">${(b.s.koe/100).toFixed(2)}</span></div>`;
-h+=`<div style="display:flex;justify-content:space-between;"><span style="color:#666;">体力</span><span style="font-weight:bold;">${(b.s.tairyoku/100).toFixed(2)}</span></div>`;
-h+=`<div style="display:flex;justify-content:space-between;"><span style="color:#666;">チームワーク</span><span style="font-weight:bold;">${(b.s.teamwork/100).toFixed(2)}</span></div>`;
+h+=`<div style="display:flex;justify-content:space-between;"><span style="color:#666;">踊り</span><span style="font-weight:bold;">${b.s.odori}</span></div>`;
+h+=`<div style="display:flex;justify-content:space-between;"><span style="color:#666;">構成</span><span style="font-weight:bold;">${b.s.kousei}</span></div>`;
+h+=`<div style="display:flex;justify-content:space-between;"><span style="color:#666;">声</span><span style="font-weight:bold;">${b.s.koe}</span></div>`;
+h+=`<div style="display:flex;justify-content:space-between;"><span style="color:#666;">体力</span><span style="font-weight:bold;">${b.s.tairyoku}</span></div>`;
+h+=`<div style="display:flex;justify-content:space-between;"><span style="color:#666;">チームワーク</span><span style="font-weight:bold;">${b.s.teamwork}</span></div>`;
 h+=`<div style="display:flex;justify-content:space-between;"><span style="color:#666;">メンバー</span><span style="font-weight:bold;">${b.s.members}人</span></div>`;
 h+=`</div>`;
 h+=`<div style="border-top:1px solid #ccc;padding-top:4px;display:grid;grid-template-columns:1fr 1fr;gap:2px 12px;">`;
@@ -1141,6 +1141,7 @@ case'canRep':canRep();break;
 </body>
 
 </html>
+
 
 
 
