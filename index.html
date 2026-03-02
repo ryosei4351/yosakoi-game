@@ -129,25 +129,28 @@ h1{text-align:center;font-size:22px;margin-bottom:4px;}
 <div class="lr-item"><span class="lr-label">企画 <span id="ln-k"></span></span><span class="lr-value">Lv<span id="ll-k">1</span></span></div>
 </div>
 <div class="result-box"><div class="result-box-title">大会結果</div><div id="cr-list"></div></div>
-<div style="margin-top:6px;"><button class="btn-small btn-secondary" id="best-toggle-btn" style="width:100%;display:none;">最高記録を見る</button></div>
+<div style="margin-top:6px;">
+<button class="btn-small btn-secondary" id="option-toggle-btn" style="width:100%;">⚙ オプション</button>
+</div>
+<div id="option-menu" style="display:none;margin-top:4px;background:#f5f5f5;border:1px solid #ccc;border-radius:4px;padding:8px;">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;">
+<button class="btn-small btn-secondary" id="best-toggle-btn" style="display:none;">最高記録</button>
+<button class="btn-small btn-secondary" id="graph-toggle-btn">グラフ表示</button>
+<button class="btn-small btn-secondary" id="rival-toggle-btn" style="display:none;">ライバル情報</button>
+<button class="btn-small btn-secondary" id="bgm-toggle-btn">BGM ON</button>
+<button class="btn-small btn-secondary" id="ranking-open-btn">ランキング</button>
+<button class="btn-small btn-secondary" id="save-confirm-btn">セーブ</button>
+<button class="btn-small btn-secondary" id="reset-confirm-btn" style="color:#999;">データ削除</button>
+</div>
+</div>
 <div id="best-area" style="display:none;margin-top:6px;background:#f5f5f5;border:1px solid #ccc;border-radius:4px;padding:8px;font-size:11px;">
 <div id="best-content"></div>
 </div>
-<div style="margin-top:6px;"><button class="btn-small btn-secondary" id="graph-toggle-btn" style="width:100%;">グラフ表示</button></div>
 <div id="graph-area" style="display:none;margin-top:6px;background:#f5f5f5;border:1px solid #ccc;border-radius:4px;padding:8px;">
 <canvas id="graph-canvas" width="460" height="200" style="width:100%;height:auto;"></canvas>
 </div>
-<div style="margin-top:6px;"><button class="btn-small btn-secondary" id="rival-toggle-btn" style="width:100%;display:none;">ライバル情報</button></div>
 <div id="rival-area" style="display:none;margin-top:6px;background:#f5f5f5;border:1px solid #ccc;border-radius:4px;padding:8px;font-size:11px;">
 <div id="rival-content"></div>
-</div>
-<div style="display:flex;gap:4px;margin-top:6px;">
-<button class="btn-small btn-secondary" id="bgm-toggle-btn" style="flex:1;">BGM ON</button>
-<button class="btn-small btn-secondary" id="ranking-open-btn" style="flex:1;">ランキング</button>
-</div>
-<div style="display:flex;gap:4px;margin-top:6px;">
-<button class="btn-small btn-secondary" id="save-confirm-btn" style="flex:1;">セーブ</button>
-<button class="btn-small btn-secondary" id="reset-confirm-btn" style="flex:1;color:#999;">データ削除</button>
 </div>
 <div class="section-title">行動</div>
 <div class="actions-grid" id="act-c"></div>
@@ -387,7 +390,10 @@ function yearlyRivalChange(){
 if(!G.rv)return;
 for(const k of Object.keys(G.rv)){
 const r=G.rv[k];const rng=RV_RANGE[r.br];
-if(rng)r.kd=rng[0]+Math.floor(Math.random()*(rng[1]-rng[0]+1));
+if(rng){
+const decayed=Math.round(r.kd*0.65);
+r.kd=Math.max(rng[0],decayed);
+}
 }}
 const EB={
 '7-2':{n:'オアシス祭り演舞',ft:5,ex:false,cp:1},
@@ -722,48 +728,35 @@ const lastKd=G.cr.length>0?G.cr[G.cr.length-1].kd:null;
 const rr=Math.random();let rc=rr<.6?2:rr<.85?3:4;
 const sh=shuf(RV),blk=sh.slice(0,rc),pool=sh.slice(rc);
 let sieve=0;if(adj>=TH.f)sieve=3;else if(adj>=TH.s)sieve=2;else if(adj>=TH.i)sieve=1;
-let blocked=false;if(sieve>=1){if(Math.random()*100<rc*12){blocked=true;sieve=Math.max(0,sieve-1);}}
 let fi=[],se=[],ic=[];
-function rivalPlace(kd){
-var tb=[
-{kd:63000,f:85,s:12,i:3},
-{kd:56000,f:65,s:25,i:8},
-{kd:49000,f:35,s:40,i:20},
-{kd:42000,f:10,s:35,i:40},
-{kd:35000,f:2,s:15,i:45},
-{kd:28000,f:0,s:3,i:30},
-{kd:21000,f:0,s:0,i:15}
-];
-var lo=tb[tb.length-1],hi=tb[0];
-for(var j=0;j<tb.length-1;j++){if(kd>=tb[j+1].kd&&kd<=tb[j].kd){hi=tb[j];lo=tb[j+1];break;}}
-if(kd>=9000){lo=hi=tb[0];}
-if(kd<=3000){lo=hi=tb[tb.length-1];}
-var range=hi.kd-lo.kd;var t=range===0?1:(kd-lo.kd)/range;
-var pf=lo.f+(hi.f-lo.f)*t;
-var ps=lo.s+(hi.s-lo.s)*t;
-var pi=lo.i+(hi.i-lo.i)*t;
-var pd=100-pf-ps-pi;if(pd<0)pd=0;
-var r=Math.random()*100;
-if(r<pf)return'fi';
-if(r<pf+ps)return'se';
-if(r<pf+ps+pi)return'ic';
-return'out';
-}
 const blkSorted=[...blk].sort(function(a,b){
 const ka=G.rv&&G.rv[a]?G.rv[a].kd:5000;
 const kb=G.rv&&G.rv[b]?G.rv[b].kd:5000;
 return kb-ka;
 });
-let blkFi=false,blkSe=false,blkIc=false;
+const stageKeys=['fi','se','ic'];
+const blkAssign={};
+for(let i=0;i<Math.min(blkSorted.length,3);i++){
+blkAssign[stageKeys[i]]=blkSorted[i];
+}
 for(const t of blkSorted){
-const rkd=G.rv&&G.rv[t]?G.rv[t].kd:5000;
-let place=rivalPlace(rkd);
-if(place==='fi'&&blkFi)place='se';
-if(place==='se'&&blkSe)place='ic';
-if(place==='ic'&&blkIc)place='out';
-if(place==='fi'){fi.push(t);blkFi=true;}
-else if(place==='se'){se.push(t);blkSe=true;}
-else if(place==='ic'){ic.push(t);blkIc=true;}
+const st=Object.keys(blkAssign).find(k=>blkAssign[k]===t);
+if(st==='fi')fi.push(t);
+else if(st==='se')se.push(t);
+else if(st==='ic')ic.push(t);
+}
+let blocked=false;
+if(sieve>=3&&blkAssign['fi']){
+const rkd=G.rv&&G.rv[blkAssign['fi']]?G.rv[blkAssign['fi']].kd:0;
+if(rkd>kd){blocked=true;sieve=2;}
+}
+if(sieve===2&&blkAssign['se']){
+const rkd=G.rv&&G.rv[blkAssign['se']]?G.rv[blkAssign['se']].kd:0;
+if(rkd>kd){blocked=true;sieve=1;}
+}
+if(sieve===1&&blkAssign['ic']){
+const rkd=G.rv&&G.rv[blkAssign['ic']]?G.rv[blkAssign['ic']].kd:0;
+if(rkd>kd){blocked=true;sieve=0;}
 }
 const inF=sieve>=3,inS=sieve===2,inI=sieve===1;
 let pi=0;
@@ -939,7 +932,8 @@ document.getElementById('rd-content').innerHTML=h;}
 function updC(){document.getElementById('ct-title').textContent=`第${G.yr}回 よさこい大会`;document.getElementById('ct-content').innerHTML=G.cc.stages[G.cs].h;document.getElementById('ct-next').textContent=G.cs>=G.cc.stages.length-1?'大会後の活動へ':'次へ';}
 
 function updHome(){
-document.getElementById('d-tn').textContent=G.tn;
+document.getElementById('d-tn').innerHTML=G.tn+'<button id="tn-edit-btn" style="font-size:10px;font-family:\'DotGothic16\',monospace;margin-left:8px;padding:2px 6px;background:#eee;border:1px solid #aaa;border-radius:3px;cursor:pointer;">変更</button>';
+document.getElementById('tn-edit-btn').addEventListener('click',function(){const n=prompt('新しいチーム名を入力してください',G.tn);if(n&&n.trim()){G.tn=n.trim();saveGame();updHome();}});
 document.getElementById('d-wk').textContent=`${G.yr}年目 ${G.mo}月${G.wk}週`;
 const na=document.getElementById('notice-area');let nt='';
 if(G.mo>=1&&G.mo<=3&&!G.cd)nt+='<div class="notice-box">メンバー募集(体験練)は3月末まで</div>';na.innerHTML=nt;
@@ -1081,6 +1075,10 @@ const area=document.getElementById('rival-area');
 if(area.style.display==='none'){renderRivals();area.style.display='block';}
 else{area.style.display='none';}
 });
+document.getElementById('option-toggle-btn').addEventListener('click',function(){
+const menu=document.getElementById('option-menu');
+menu.style.display=menu.style.display==='none'?'block':'none';
+});
 document.getElementById('bgm-toggle-btn').addEventListener('click',toggleBGM);
 document.getElementById('best-toggle-btn').addEventListener('click',function(){
 const area=document.getElementById('best-area');
@@ -1142,6 +1140,7 @@ case'canRep':canRep();break;
 </body>
 
 </html>
+
 
 
 
