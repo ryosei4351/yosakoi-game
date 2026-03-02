@@ -1078,7 +1078,14 @@ else{area.style.display='none';}
 });
 document.getElementById('option-toggle-btn').addEventListener('click',function(){
 const menu=document.getElementById('option-menu');
-menu.style.display=menu.style.display==='none'?'block':'none';
+if(menu.style.display==='none'){
+menu.style.display='block';
+}else{
+menu.style.display='none';
+document.getElementById('best-area').style.display='none';
+document.getElementById('graph-area').style.display='none';
+document.getElementById('rival-area').style.display='none';
+}
 });
 document.getElementById('bgm-toggle-btn').addEventListener('click',toggleBGM);
 document.getElementById('best-toggle-btn').addEventListener('click',function(){
@@ -1141,6 +1148,7 @@ case'canRep':canRep();break;
 </body>
 
 </html>
+
 
 
 
