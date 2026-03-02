@@ -354,7 +354,7 @@ const TUT_SLIDES=[
 ];
 window.addEventListener('beforeunload',function(e){if(gameStarted){e.preventDefault();e.returnValue='';}});
 
-const TH={i:25000,s:35000,f:46000,j:60000,t:80000};
+const TH={i:32000,s:40000,f:48000,j:60000,t:80000};
 const RV_RANGE={S:[56000,63000],A:[49000,56000],B:[42000,49000],C:[35000,42000],D:[28000,35000],E:[21000,28000],F:[14000,21000]};
 const RV_BASE=[
 {n:'BASSARI',br:'C'},{n:'北極星',br:'A'},{n:'奪家白猫',br:'A'},
@@ -724,7 +724,7 @@ function advFromResult(){advWk();if(G.ph==='result')G.ph='training';saveGame();r
 function prepC(){
 let base=300;if(G.cr.length>0)base=G.cr[G.cr.length-1].teams;
 const v=Math.round(base*.03),teams=base+Math.floor(Math.random()*(v*2+1))-v;
-const kd=calcK(),cb=G.cp||0,adj=kd*(300/teams)*(1+cb*.02);
+const kd=calcK(),cb=G.cp||0,adj=kd*(300/teams)*(1+cb*.005);
 const lastKd=G.cr.length>0?G.cr[G.cr.length-1].kd:null;
 const rr=Math.random();let rc=rr<.6?2:rr<.85?3:4;
 const sh=shuf(RV),blk=sh.slice(0,rc),pool=sh.slice(rc);
@@ -1141,6 +1141,7 @@ case'canRep':canRep();break;
 </body>
 
 </html>
+
 
 
 
