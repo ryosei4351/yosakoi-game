@@ -352,7 +352,7 @@ const TUT_SLIDES=[
 window.addEventListener('beforeunload',function(e){if(gameStarted){e.preventDefault();e.returnValue='';}});
 
 const TH={i:25000,s:35000,f:46000,j:60000,t:80000};
-const RV_RANGE={S:[8000,9000],A:[7000,8000],B:[6000,7000],C:[5000,6000],D:[4000,5000],E:[3000,4000],F:[2000,3000]};
+const RV_RANGE={S:[56000,63000],A:[49000,56000],B:[42000,49000],C:[35000,42000],D:[28000,35000],E:[21000,28000],F:[14000,21000]};
 const RV_BASE=[
 {n:'BASSARI',br:'C'},{n:'北極星',br:'A'},{n:'奪家白猫',br:'A'},
 {n:'クエスチョン',br:'C'},{n:'まんなか',br:'C'},{n:'氷',br:'C'},{n:'闇一点',br:'C'},
@@ -374,13 +374,13 @@ return rv;
 }
 function weeklyRivalGrowth(){
 if(!G.rv)return;
-const growthBase={S:60,A:45,B:32,C:20,D:12,E:8,F:5};
+const growthBase={S:420,A:315,B:224,C:140,D:84,E:56,F:35};
 for(const k of Object.keys(G.rv)){
 const r=G.rv[k];
-const base=growthBase[r.br]||12;
+const base=growthBase[r.br]||84;
 const rand=0.7+Math.random()*0.6;
-const growth=Math.round(base*rand*dim(r.kd));
-r.kd=Math.min(10000,r.kd+Math.max(0,growth));
+const growth=Math.round(base*rand);
+r.kd=Math.min(90000,r.kd+Math.max(0,growth));
 }}
   
 function yearlyRivalChange(){
@@ -597,7 +597,7 @@ function addS(k,b){const c=G.s[k]||0;G.s[k]=c+Math.max(1,Math.round(b*dim(c)));}
 function addTW(b){G.s.teamwork=Math.min(10000,G.s.teamwork+Math.max(1,Math.round(b*dim(G.s.teamwork))));}
 function calcK(){const s=G.s;return Math.round((s.odori+s.kousei+s.koe*.5+s.tairyoku*.5)*(1+Math.max(0,s.members-10)*.01));}
 function calcKForRanking(){const s=G.s;return Math.round((s.odori+s.kousei+s.koe*.5+s.tairyoku*.5)/3);}
-function calcRank(){if(!G.rv)return null;const pk=calcKForRanking();let r=1;for(const k of Object.keys(G.rv)){if(G.rv[k].kd>pk)r++;}return{rank:r,total:Object.keys(G.rv).length+1};}
+function calcRank(){if(!G.rv)return null;const pk=calcK();let r=1;for(const k of Object.keys(G.rv)){if(G.rv[k].kd>pk)r++;}return{rank:r,total:Object.keys(G.rv).length+1};}
 function ym(){const y=G.s.yaruki;if(y>=100)return 1.3;if(y>=90)return 1.2;if(y>=80)return 1.1;if(y>=70)return 1.0;if(y>=50)return 0.8;if(y>=30)return 0.6;return 0.4;}
 function rank(v){if(v>=9000)return'S';if(v>=8000)return'A';if(v>=7000)return'B';if(v>=6000)return'C';if(v>=5000)return'D';if(v>=4000)return'E';if(v>=3000)return'F';return'G';}
 function rv(v){return rank(v)+' '+(v/100).toFixed(2);}
@@ -726,13 +726,13 @@ let blocked=false;if(sieve>=1){if(Math.random()*100<rc*12){blocked=true;sieve=Ma
 let fi=[],se=[],ic=[];
 function rivalPlace(kd){
 var tb=[
-{kd:9000,f:85,s:12,i:3},
-{kd:8000,f:65,s:25,i:8},
-{kd:7000,f:35,s:40,i:20},
-{kd:6000,f:10,s:35,i:40},
-{kd:5000,f:2,s:15,i:45},
-{kd:4000,f:0,s:3,i:30},
-{kd:3000,f:0,s:0,i:15}
+{kd:63000,f:85,s:12,i:3},
+{kd:56000,f:65,s:25,i:8},
+{kd:49000,f:35,s:40,i:20},
+{kd:42000,f:10,s:35,i:40},
+{kd:35000,f:2,s:15,i:45},
+{kd:28000,f:0,s:3,i:30},
+{kd:21000,f:0,s:0,i:15}
 ];
 var lo=tb[tb.length-1],hi=tb[0];
 for(var j=0;j<tb.length-1;j++){if(kd>=tb[j+1].kd&&kd<=tb[j].kd){hi=tb[j];lo=tb[j+1];break;}}
@@ -840,7 +840,7 @@ render();
 
 function prepLC(){const cr=G.cr.find(r=>r.year===G.yr);let baseBp=30;if(cr){const pm={0:30,1:50,2:60,3:70,4:80,5:90};baseBp=pm[cr.rl]||30;}
 function calcBp(k){const y=G.ld[k].years||1;let p=baseBp;if(y>=5)p=Math.max(5,p-(y-4)*15);return p;}
-const bps={daihyo:calcBp('daihyo'),furi:calcBp('furi'),sakuhin:calcBp('sakuhin'),kikaku:calcBp('kikaku')};
+const bps={daihyo:Math.min(100,calcBp('daihyo')+10),furi:calcBp('furi'),sakuhin:calcBp('sakuhin'),kikaku:calcBp('kikaku')};
 G.lc={keys:['daihyo','furi','sakuhin','kikaku'],ci:0,rd:0,prob:bps['daihyo'],bp:baseBp,bps,ph:'intro',res:{},qs:{}};}
 function renderLC(){const lc=G.lc,con=document.getElementById('lc-content');
 if(!lc){con.innerHTML='<div class="dialogue-text">データエラー</div><button class="btn" data-lc="err">ホームに戻る</button>';return;}
@@ -945,7 +945,7 @@ const na=document.getElementById('notice-area');let nt='';
 if(G.mo>=1&&G.mo<=3&&!G.cd)nt+='<div class="notice-box">メンバー募集(体験練)は3月末まで</div>';na.innerHTML=nt;
 const s=G.s;
 document.getElementById('s-kd').textContent=calcK();
-const ri=calcRank();if(ri&&document.getElementById('s-rank')){const rkd=calcKForRanking();document.getElementById('s-rank').textContent=ri.rank+'位 / '+ri.total+'チーム中 ('+rank(rkd)+')';}
+const ri=calcRank();if(ri&&document.getElementById('s-rank')){document.getElementById('s-rank').textContent=ri.rank+'位 / '+ri.total+'チーム中';}
 document.getElementById('s-od').textContent=rv(s.odori);
 document.getElementById('s-ko').textContent=rv(s.kousei);
 document.getElementById('s-koe').textContent=rv(s.koe);
@@ -981,7 +981,7 @@ function showMsg(t){const b=document.getElementById('message-box');if(t){b.inner
 
 function renderRivals(){
 if(!G.rv)return;
-const pk=calcKForRanking();
+const pk=calcK();
 const entries=[{n:G.tn,kd:pk,br:'',isPlayer:true}];
 for(const n of Object.keys(G.rv)){entries.push({n,kd:G.rv[n].kd,br:G.rv[n].br,isPlayer:false});}
 entries.sort((a,b)=>b.kd-a.kd);
@@ -1142,6 +1142,7 @@ case'canRep':canRep();break;
 </body>
 
 </html>
+
 
 
 
